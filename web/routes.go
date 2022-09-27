@@ -135,7 +135,6 @@ func MakeICPForTaxAgency(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        filename   path      string  true  "ICP filename, exp: BE0796544895_202209_01154020.xlsx"
-// @Param        month   query      string  true  "which month: exp: 2006-01"
 // @Success      200
 // @Failure      400
 // @Router       /icp/download/{filename} [get]
