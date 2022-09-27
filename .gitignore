@@ -1,0 +1,19 @@
+./**
+../**
+.git/**
+.idea/**
+.tguard-test.yaml
+.DS_Store
+
+**test**
+**local**
+**dev**
+**.sum
+
+
+
+dist/
+/tguard
+
+# Project exclude paths
+/tmp/

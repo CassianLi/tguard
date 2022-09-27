@@ -1,0 +1,132 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/icp/append": {
+            "post": {
+                "description": "If the specified ICP file does not exist will create a new ICP file with the specified ICP file name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "icp"
+                ],
+                "summary": "Add the specified Customs IDs to the specified ICP file",
+                "parameters": [
+                    {
+                        "description": "Customs append into the ICP file",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web.CustomsAppendToICP"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/icp/download/{filename}": {
+            "get": {
+                "description": "File name format (BE0796544895_202209_01154020.xlsx), the file path will be found by the date in the file name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "download"
+                ],
+                "summary": "Download ICP file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ICP filename,example:BE0796544895_202209_01154020.xlsx",
+                        "name": "filename",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/icp/taxAgency/{dutyParty}": {
+            "get": {
+                "description": "If there is no customs declaration in the specified month of the tax agency, it will not be generated",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "icp"
+                ],
+                "summary": "Generate a month's ICP file for tax agency",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The duty party of tax agency",
+                        "name": "dutyParty",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "which month, default is this month,example:2006-01",
+                        "name": "month",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "web.CustomsAppendToICP": {
+            "type": "object",
+            "required": [
+                "customs_ids",
+                "file_name"
+            ],
+            "properties": {
+                "customs_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "file_name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

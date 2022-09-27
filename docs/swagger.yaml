@@ -1,0 +1,88 @@
+definitions:
+  web.CustomsAppendToICP:
+    properties:
+      customs_ids:
+        items:
+          type: string
+        type: array
+      file_name:
+        type: string
+    required:
+    - customs_ids
+    - file_name
+    type: object
+info:
+  contact: {}
+paths:
+  /icp/append:
+    post:
+      consumes:
+      - application/json
+      description: If the specified ICP file does not exist will create a new ICP
+        file with the specified ICP file name
+      parameters:
+      - description: Customs append into the ICP file
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/web.CustomsAppendToICP'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Add the specified Customs IDs to the specified ICP file
+      tags:
+      - icp
+  /icp/download/{filename}:
+    get:
+      consumes:
+      - application/json
+      description: File name format (BE0796544895_202209_01154020.xlsx), the file
+        path will be found by the date in the file name
+      parameters:
+      - description: ICP filename,example:BE0796544895_202209_01154020.xlsx
+        in: path
+        name: filename
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Download ICP file
+      tags:
+      - download
+  /icp/taxAgency/{dutyParty}:
+    get:
+      consumes:
+      - application/json
+      description: If there is no customs declaration in the specified month of the
+        tax agency, it will not be generated
+      parameters:
+      - description: The duty party of tax agency
+        in: path
+        name: dutyParty
+        required: true
+        type: string
+      - description: which month, default is this month,example:2006-01
+        in: query
+        name: month
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Generate a month's ICP file for tax agency
+      tags:
+      - icp
+swagger: "2.0"
