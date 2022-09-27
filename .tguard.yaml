@@ -1,0 +1,16 @@
+port: 7005
+
+mysql:
+  driver: mysql
+  url:
+  # connection max life time: default 3 minutes
+  max-life-time: 3
+  # max open connections: default 10
+  max-open-connections: 10
+  # max idle connections: default 10
+  max-idle-connections: 10
+
+icp:
+  # 秒 分 时 日 月 周
+  crontab: '* * 2 1 * *'
+  save-dir: tmp/
