@@ -39,8 +39,6 @@ func (icp *CustomsICP) queryTaxData() {
 	}
 	icp.Mrn, icp.DeclareCountry = icpBase.Mrn, icpBase.DeclareCountry
 
-	fmt.Println("base info:", icpBase)
-
 	// tax info
 	var taxInfo []CustomsICPTax
 	err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSql, icp.CustomsId, ProcessCodeTax)
@@ -51,7 +49,6 @@ func (icp *CustomsICP) queryTaxData() {
 	if err != nil || len(taxInfo) == 0 {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query tax info failed.%v", icp.CustomsId, err))
 	}
-	fmt.Println("tax info:", taxInfo)
 
 	// importer info
 	var importerInfo CustomsICPImporter
@@ -59,7 +56,6 @@ func (icp *CustomsICP) queryTaxData() {
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query importer info failed.%v", icp.CustomsId, err))
 	}
-	fmt.Println("importer info: ", importerInfo)
 
 	// delivery info
 	var deliveryInfo CustomsICPDelivery
@@ -67,7 +63,6 @@ func (icp *CustomsICP) queryTaxData() {
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query delivery address info failed.%v", icp.CustomsId, err))
 	}
-	fmt.Println("delivery info:", deliveryInfo)
 
 	// Company info
 	var companyName string
@@ -75,16 +70,13 @@ func (icp *CustomsICP) queryTaxData() {
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query company name failed.%v", icp.CustomsId, err))
 	}
-	fmt.Println("company name:", companyName)
 
 	// into which icp file
 	var icpFileNames string
 	err = global.Db.Get(&icpFileNames, QueryCustomsHasInICPNameSql, icp.CustomsId)
 	if err != nil {
-		fmt.Printf("The customs_id:%s query company name failed.%v\n", icp.CustomsId, err)
 		icpFileNames = ""
 	}
-	fmt.Println("Has in icp:", icpFileNames)
 	if len(icp.Errors) == 0 {
 		taxData := combineToTaxData(icpBase, taxInfo, importerInfo, deliveryInfo, companyName, icpFileNames)
 		icp.TaxData = taxData

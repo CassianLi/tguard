@@ -102,6 +102,7 @@ func MakeICPForTaxAgency(c echo.Context) (err error) {
 		month = time.Now().Format("2006-01")
 		log.Printf("Month is empty, use this month:%s instead.\n", month)
 	}
+	start := time.Now().UnixMilli()
 
 	icp := &icp2.FileOfICP{
 		DutyParty: dutyParty,
@@ -120,6 +121,9 @@ func MakeICPForTaxAgency(c echo.Context) (err error) {
 			Errors: errs,
 		})
 	}
+	end := time.Now().UnixMilli()
+
+	log.Printf("**** Generat ICP time costs: %d ms****\n", end-start)
 
 	return c.JSON(http.StatusOK, &IcpResponse{
 		Status:   SUCCESS,

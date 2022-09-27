@@ -2,10 +2,10 @@ package icp
 
 const (
 	// QueryCustomsIdForICPWithinOneMonthSql SQL is used to query the CustomsId of tax receipts within a month
-	QueryCustomsIdForICPWithinOneMonthSql = `SELECT lcp.customs_id, c.duty_party
+	QueryCustomsIdForICPWithinOneMonthSql = `SELECT lcp.customs_id
 FROM log_clearance_process lcp
          INNER JOIN base_customs c ON lcp.customs_id = c.customs_id
-WHERE c.duty_pary = ?
+WHERE c.duty_party = ?
   AND lcp.gmt_create BETWEEN ? AND ?
   AND (lcp.process_code = 'TAX'
     OR lcp.process_code = 'TMP_TAX');`

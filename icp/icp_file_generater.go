@@ -44,6 +44,7 @@ func (f *FileOfICP) QueryCustomsIDs(startDate string, endDate string) {
 	if err != nil || len(customsIds) == 0 {
 		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs for duty party %s between start date %s and end date %s", f.DutyParty, startDate, endDate))
 	}
+	log.Printf("Total cusotms: %d", len(customsIds))
 	f.CustomsIDs = customsIds
 }
 
@@ -72,7 +73,9 @@ func (f *FileOfICP) GenerateICP() string {
 
 // generateFillData Generate fill data for ICP file.
 func (f *FileOfICP) generateFillData() {
-	for _, d := range f.CustomsIDs {
+	log.Printf("**** Begin to generate ICP file ****")
+	for i, d := range f.CustomsIDs {
+		log.Printf("**** %d cusotms ID: %s ****", i, d)
 		icp := &CustomsICP{
 			CustomsId: d,
 		}
@@ -128,6 +131,7 @@ func (f *FileOfICP) readyICPFileInfo() {
 
 // createICPFile creates a ICP excel file
 func (f *FileOfICP) createICPFile() {
+	log.Println("**** Creating ICP excel ****")
 	file := excelize.NewFile()
 	icpDate := time.Now().Format(FileNameDateLayout)
 
@@ -146,6 +150,7 @@ func (f *FileOfICP) createICPFile() {
 		f.Errors = append(f.Errors, fmt.Sprintf("Fill POD sheet failed: %v", err))
 	}
 
+	log.Printf("**** Save ICP excel: %s ****\n", f.FilePath)
 	if err := file.SaveAs(f.FilePath); err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP file on disk failed: %v", err))
 	}
