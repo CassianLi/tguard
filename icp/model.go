@@ -49,6 +49,25 @@ type CustomsICPDelivery struct {
 	PostalCode    string         `db:"postal_code"`
 }
 
+// ServiceICP sysafari.service_icp
+type ServiceICP struct {
+	DutyParty string `db:"duty_part"`
+	Name      string `db:"name"`
+	Year      int    `db:"year"`
+	Month     int    `db:"month"`
+	IcpDate   string `db:"icp_date"`
+	Total     int    `db:"total"`
+	Status    bool   `db:"status"`
+}
+
+// ServiceICPCustoms sysafari.service_icp_customs
+type ServiceICPCustoms struct {
+	IcpName   string `db:"icp_name"`
+	CustomsId string `db:"customs_id"`
+	TaxType   int    `db:"tax_type"`
+	InExcel   bool   `db:"in_excel"`
+}
+
 // TaxObject tax information object
 type TaxObject struct {
 	Sn                   int
@@ -88,8 +107,11 @@ type TaxObject struct {
 
 // TaxFileObject The object of the tax file
 type TaxFileObject struct {
-	Sn          int
-	Mrn         string
+	Sn        int
+	Mrn       string
+	CustomsId string
+	// 4, 115
+	TaxType     int
 	TaxFileLink string
 }
 

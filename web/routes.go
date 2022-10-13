@@ -104,17 +104,9 @@ func MakeICPForTaxAgency(c echo.Context) (err error) {
 	}
 	start := time.Now().UnixMilli()
 
-	icp := &icp2.FileOfICP{
-		DutyParty: dutyParty,
-	}
+	// Make ICP
+	filename, errs := icp2.MakeICPForDutyPart(dutyParty, month)
 
-	startDate := fmt.Sprintf("%s-01", month)
-	endDate := fmt.Sprintf("%s-31", month)
-	icp.QueryCustomsIDs(startDate, endDate)
-
-	filename := icp.GenerateICP()
-
-	errs = icp.Errors
 	if errs != nil && len(errs) > 0 {
 		return c.JSON(http.StatusInternalServerError, &IcpResponse{
 			Status: FAIL,

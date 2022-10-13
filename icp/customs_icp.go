@@ -13,7 +13,9 @@ const (
 )
 
 type CustomsICP struct {
-	CustomsId      string          `json:"customs_id"`
+	CustomsId string `json:"customs_id"`
+	// TAX , TAX_TMP
+	ProcessCode    string          `json:"process_code"`
 	DeclareCountry string          `json:"declare_country"`
 	Mrn            string          `json:"mrn"`
 	TaxData        []TaxObject     `json:"tax_data"`
@@ -48,6 +50,8 @@ func (icp *CustomsICP) queryTaxData() {
 	}
 	if err != nil || len(taxInfo) == 0 {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query tax info failed.%v", icp.CustomsId, err))
+	} else {
+		icp.ProcessCode = taxInfo[0].ProcessCode
 	}
 
 	// importer info
@@ -129,9 +133,15 @@ func combineToTaxData(baseInfo CustomsICPBase, taxInfo []CustomsICPTax, importer
 
 // queryTaxFileData Query the fill data of the tax file table
 func (icp *CustomsICP) queryTaxFileData() {
+	taxType := 114
+	if "TAX" == icp.ProcessCode {
+		taxType = 4
+	}
 	if "NL" == icp.DeclareCountry {
 		tf := TaxFileObject{
 			Mrn:         icp.Mrn,
+			CustomsId:   icp.CustomsId,
+			TaxType:     taxType,
 			TaxFileLink: TaxFileUrlPrefixForNL + icp.CustomsId,
 		}
 		icp.TaxFileData = append(icp.TaxFileData, tf)

@@ -21,6 +21,8 @@ const (
 type FileOfICP struct {
 	// CustomsIDs The customs IDs that needs to be placed in the ICP file
 	CustomsIDs []string `json:"customs_ids"`
+	// Month ICP file for which month, exp: 2006-01
+	Month string `json:"month"`
 	// The duty party
 	DutyParty string `json:"duty_party"`
 	// TaxData Population data for tax information form
@@ -38,11 +40,11 @@ type FileOfICP struct {
 }
 
 // QueryCustomsIDs Query customs IDs between the startDate and endDate
-func (f *FileOfICP) QueryCustomsIDs(startDate string, endDate string) {
+func (f *FileOfICP) QueryCustomsIDs() {
 	var customsIds []string
-	err := global.Db.Select(&customsIds, QueryCustomsIdForICPWithinOneMonthSql, f.DutyParty, startDate, endDate)
+	err := global.Db.Select(&customsIds, QueryCustomsIdForICPWithinOneMonthSql, f.DutyParty, f.Month)
 	if err != nil || len(customsIds) == 0 {
-		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs for duty party %s between start date %s and end date %s", f.DutyParty, startDate, endDate))
+		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs for duty party %s with month %s", f.DutyParty, f.Month))
 	}
 	log.Printf("Total cusotms: %d", len(customsIds))
 	f.CustomsIDs = customsIds
@@ -66,9 +68,58 @@ func (f *FileOfICP) GenerateICP() string {
 			log.Printf("Generating ICP create ICP excel file error: %v \n", f.Errors)
 		}
 
+		f.saveICPInfoIntoDB(true)
+		f.saveCustomsInfoWithinICP()
+		if len(f.Errors) > 0 {
+			log.Printf("Save ICP and customs info failed, error: %v \n", f.Errors)
+		}
+
 		return f.FileName
 	}
 	return ""
+}
+
+// saveICPInfoIntoDB Save ICP info to database
+func (f *FileOfICP) saveICPInfoIntoDB(status bool) {
+	dt, err := time.Parse("2006-01", f.Month)
+	if err != nil {
+		f.Errors = append(f.Errors, fmt.Sprintf("ICP's filename(%s) error: %v", f.FileName, err))
+	}
+	serviceIcp := &ServiceICP{
+		DutyParty: f.DutyParty,
+		Name:      f.FileName,
+		Year:      dt.Year(),
+		Month:     int(dt.Month()),
+		IcpDate:   time.Now().UTC().Format("2006-01-02 15:04:05"),
+		Total:     len(f.CustomsIDs),
+		Status:    status,
+	}
+	_, err = global.Db.NamedExec(InsertServiceICP, serviceIcp)
+	if err != nil {
+		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s) information failed: %v", f.FileName, err))
+	}
+}
+
+// saveCustomsInfoWithinICP Save relations information for customs and ICP
+func (f *FileOfICP) saveCustomsInfoWithinICP() {
+	var customsICPs []ServiceICPCustoms
+
+	for _, i2 := range f.TaxFileData {
+		customsId := i2.CustomsId
+		ci := ServiceICPCustoms{
+			IcpName:   f.FileName,
+			CustomsId: customsId,
+			TaxType:   i2.TaxType,
+			InExcel:   utils.In(customsId, f.CustomsIDs),
+		}
+		customsICPs = append(customsICPs, ci)
+	}
+
+	_, err := global.Db.NamedExec(InsertServiceICPCustoms, customsICPs)
+	if err != nil {
+		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s)'s customs information failed: %v", f.FileName, err))
+	}
+
 }
 
 // generateFillData Generate fill data for ICP file.
@@ -97,14 +148,16 @@ func (f *FileOfICP) readyICPFileInfo() {
 		log.Panic("ICP root save directory not set ..")
 	}
 
-	var now time.Time
+	monthDt, err := time.Parse("2006-01", f.Month)
+	if err != nil {
+		f.Errors = append(f.Errors, fmt.Sprintf("ICP's month format error, %s.", f.Month))
+	}
 	if f.FileName == "" {
 		if f.DutyParty == "" {
 			f.Errors = append(f.Errors, fmt.Sprintf("Duty party is required to generate ICP file, but is empty."))
 			return
 		}
-		now = time.Now()
-		date, t := now.Format(FileNameDateLayout), now.Format(FileNameTimeLayout)
+		date, t := monthDt.Format(FileNameDateLayout), time.Now().Format(FileNameTimeLayout)
 		f.FileName = fmt.Sprintf("%s_%s_%s.xlsx", f.DutyParty, date, t)
 	} else {
 		fp := strings.Split(f.FileName, "_")
@@ -115,10 +168,10 @@ func (f *FileOfICP) readyICPFileInfo() {
 			f.Errors = append(f.Errors, fmt.Sprintf("The ICP filename:%s invalid format(correct: BE0796544895_200601_02150405.xlsx)", f.FileName))
 			return
 		}
-		now = d
+		monthDt = d
 	}
 
-	year, month := utils.GetCurrentYearMonth(now)
+	year, month := utils.GetCurrentYearMonth(monthDt)
 	saveDir := filepath.Join(saveRoot, year, month)
 
 	log.Println("ICP save dir: ", saveDir)

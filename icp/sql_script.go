@@ -1,12 +1,21 @@
 package icp
 
 const (
+	// QueryDutyPartiesForMonth SQL is used to query duty parties for a month
+	QueryDutyPartiesForMonth = `SELECT DISTINCT c.duty_party
+FROM log_clearance_process lcp
+         INNER JOIN base_customs c ON lcp.customs_id = c.customs_id
+WHERE LENGTH(c.duty_party) > 5
+    AND DATE_FORMAT(lcp.gmt_create, '%Y-%m') = ?
+  AND (lcp.process_code = 'TAX'
+    OR lcp.process_code = 'TMP_TAX');`
+
 	// QueryCustomsIdForICPWithinOneMonthSql SQL is used to query the CustomsId of tax receipts within a month
 	QueryCustomsIdForICPWithinOneMonthSql = `SELECT lcp.customs_id
 FROM log_clearance_process lcp
          INNER JOIN base_customs c ON lcp.customs_id = c.customs_id
 WHERE c.duty_party = ?
-  AND lcp.gmt_create BETWEEN ? AND ?
+  AND DATE_FORMAT(lcp.gmt_create, '%Y-%m') = ?
   AND (lcp.process_code = 'TAX'
     OR lcp.process_code = 'TMP_TAX');`
 
@@ -88,4 +97,12 @@ FROM base_reference_tracking t
          LEFT JOIN base_track_logistics_info btli ON t.tracking_no = btli.tracking_no AND btli.index_no = 0
          LEFT JOIN base_file bf ON bf.id = btli.file_id
 WHERE t.customs_id = ? ;`
+
+	// InsertServiceICP Insert row into service_icp
+	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status) 
+values (:duty_part, :name, :year, :month, :icp_date,:total,:status);`
+
+	// InsertServiceICPCustoms Insert row into service_icp_customs
+	InsertServiceICPCustoms = `INSERT INTO service_icp_customs (icp_name, xml_id, customs_id, tax_type, in_excel) 
+values (:icp_name, '', :customs_id, :tax_type, :in_excel);`
 )

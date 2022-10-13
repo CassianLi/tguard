@@ -2,8 +2,10 @@
 ../**
 .git/**
 .idea/**
-.tguard-test.yaml
 .DS_Store
+
+.tguard-pro.yaml
+.tguard-test.yaml
 
 **test**
 **local**
