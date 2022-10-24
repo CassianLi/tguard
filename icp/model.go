@@ -17,22 +17,22 @@ type CustomsICPBase struct {
 
 // CustomsICPTax Tax info of customs
 type CustomsICPTax struct {
-	TaxType            string  `db:"tax_type"`
-	ItemNumber         string  `db:"itemnr"`
-	Destined           string  `db:"destined"`
-	LocalCurrencyValue float64 `db:"declared_amount"`
-	ImportDuty         float64 `db:"importDuty"`
-	DutchCost          string  `db:"dutchCost"`
-	DutchVat           string  `db:"dutchVat"`
-	CountryPreFix      string  `db:"countryPreFix"`
-	ProcessCode        string  `db:"process_code"`
-	InvoiceDate        string  `db:"invoiceDate"`
-	ProductNo          string  `db:"product_no"`
-	HsCode             string  `db:"hs_code"`
-	NetWeight          float64 `db:"net_weight"`
-	Quantity           int     `db:"quantity"`
-	Description        string  `db:"description"`
-	Currency           string  `db:"currency"`
+	TaxType            string         `db:"tax_type"`
+	ItemNumber         string         `db:"itemnr"`
+	Destined           string         `db:"destined"`
+	LocalCurrencyValue float64        `db:"declared_amount"`
+	ImportDuty         float64        `db:"importDuty"`
+	DutchCost          string         `db:"dutchCost"`
+	DutchVat           string         `db:"dutchVat"`
+	CountryPreFix      string         `db:"countryPreFix"`
+	ProcessCode        string         `db:"process_code"`
+	InvoiceDate        string         `db:"invoiceDate"`
+	ProductNo          string         `db:"product_no"`
+	HsCode             sql.NullString `db:"hs_code"`
+	NetWeight          float64        `db:"net_weight"`
+	Quantity           int            `db:"quantity"`
+	Description        sql.NullString `db:"description"`
+	Currency           string         `db:"currency"`
 }
 
 // CustomsICPImporter The importer address info for customs
@@ -87,7 +87,7 @@ type TaxObject struct {
 	ImportDuty           float64        `db:"importDuty"`
 	DutchCost            string         `db:"dutchCost"`
 	DutchVat             string         `db:"dutchVat"`
-	HsCode               string         `db:"hsCode"`
+	HsCode               sql.NullString `db:"hsCode"`
 	NetWeight            float64        `db:"netWeight"`
 	Quantity             int            `db:"quantity"`
 	CountryPreFix        string         `db:"countryPreFix"`
@@ -102,7 +102,7 @@ type TaxObject struct {
 	PostalCode           sql.NullString `db:"postalCode"`
 	City                 string         `db:"city"`
 	ProductNo            string         `db:"productNo"`
-	Description          string         `db:"description"`
+	Description          sql.NullString `db:"description"`
 	Mrn                  string         `db:"mrn"`
 	Mode                 string         `db:"mode"`
 	CompanyName          string         `db:"companyName"`

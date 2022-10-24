@@ -42,7 +42,7 @@ WHERE a.vat_no = ? and c.customs_id is not null ;`
        cd.product_no                                                AS productNo,
        d.description,
        c.mrn,
-       com.name                                                     AS companyName,
+       IFNULL(com.name,'')                                                    AS companyName,
        b.mode,
        ''                                       					AS hasInIcp
 FROM base_customs c
