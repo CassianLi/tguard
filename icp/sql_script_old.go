@@ -9,7 +9,7 @@ const (
 	QueryCustomsIDsByVatSql = `SELECT DISTINCT customs_id
 FROM base_address a
          LEFT JOIN base_customs c ON a.address_code = c.importer
-WHERE a.vat_no = ? and c.customs_id is not null;`
+WHERE a.vat_no = ? and c.customs_id is not null ;`
 
 	// QueryOldICPFillDataSql 老版本一次查询customs_id 所有数据
 	QueryOldICPFillDataSql = `SELECT b.bill_no ,                                                
@@ -35,7 +35,8 @@ WHERE a.vat_no = ? and c.customs_id is not null;`
        vatA.eori_no                                                 AS eoriNo,
        vatA.address_code                                            AS importAddressCode,
        ca.address_code                                              AS addressCode,
-       CONCAT(ca.address_line1, ca.address_line2, ca.address_line3) AS addressDetail,
+       CONCAT(IFNULL(ca.address_line1, ''), IFNULL(ca.address_line2, ''),
+              IFNULL(ca.address_line3, ''))  AS addressDetail,
        ca.postal_code                                               AS postalCode,
        ca.city,
        cd.product_no                                                AS productNo,

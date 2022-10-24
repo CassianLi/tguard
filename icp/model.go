@@ -48,7 +48,7 @@ type CustomsICPDelivery struct {
 	Country       string         `db:"country"`
 	City          string         `db:"city"`
 	AddressDetail sql.NullString `db:"addressDetail"`
-	PostalCode    string         `db:"postal_code"`
+	PostalCode    sql.NullString `db:"postal_code"`
 }
 
 // ServiceICP sysafari.service_icp
@@ -100,13 +100,13 @@ type TaxObject struct {
 	AddressCode          string         `db:"addressCode"`
 	AddressDetail        sql.NullString `db:"addressDetail"`
 	PostalCode           sql.NullString `db:"postalCode"`
-	City                 sql.NullString `db:"city"`
+	City                 string         `db:"city"`
 	ProductNo            string         `db:"productNo"`
 	Description          string         `db:"description"`
 	Mrn                  string         `db:"mrn"`
 	Mode                 string         `db:"mode"`
 	CompanyName          string         `db:"companyName"`
-	InICPFile            sql.NullString `db:"hasInIcp"`
+	InICPFile            string         `db:"hasInIcp"`
 }
 
 // TaxFileObject The object of the tax file
