@@ -1,6 +1,8 @@
 package icp
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // CustomsICPBase Base info of customs icp
 type CustomsICPBase struct {
@@ -68,41 +70,43 @@ type ServiceICPCustoms struct {
 	InExcel   bool   `db:"in_excel"`
 }
 
-// TaxObject tax information object
+// TaxObject tax information object,
+// db 字段关联的为老版本查询
 type TaxObject struct {
 	Sn                   int
-	BillNo               string
-	TaxType              string
-	ItemNumber           string
-	Destined             string
+	BillNo               string `db:"bill_no"`
+	TaxType              string `db:"taxType"`
+	ItemNumber           string `db:"itemnr"`
+	Destined             string `db:"destinedNumber"`
 	ProcessCode          string
-	CustomsId            string
-	InvoiceDate          string
-	Currency             string
-	LocalCurrencyValue   float64
-	ImportDuty           float64
-	DutchCost            string
-	DutchVat             string
-	HsCode               string
-	NetWeight            float64
-	Quantity             int
-	CountryPreFix        string
-	DutyParty            string
-	PartnerName          string
-	CountryOfDestination string
-	VatNo                string
-	EoriNo               string
-	ImportAddressCode    string
-	AddressCode          string
-	AddressDetail        string
-	PostalCode           string
-	City                 string
-	ProductNo            string
-	Description          string
-	Mrn                  string
-	Mode                 string
-	CompanyName          string
-	InICPFile            string
+	ProcessStatus        int     `db:"processingStatus"`
+	CustomsId            string  `db:"customs_id"`
+	InvoiceDate          string  `db:"invoiceDate"`
+	Currency             string  `db:"currency"`
+	LocalCurrencyValue   float64 `db:"localCurrencyValue"`
+	ImportDuty           float64 `db:"importDuty"`
+	DutchCost            string  `db:"dutchCost"`
+	DutchVat             string  `db:"dutchVat"`
+	HsCode               string  `db:"hsCode"`
+	NetWeight            float64 `db:"netWeight"`
+	Quantity             int     `db:"quantity"`
+	CountryPreFix        string  `db:"countryPreFix"`
+	DutyParty            string  `db:"dutyParty"`
+	PartnerName          string  `db:"partnerName"`
+	CountryOfDestination string  `db:"countryOfDestination"`
+	VatNo                string  `db:"vatNo"`
+	EoriNo               string  `db:"eoriNo"`
+	ImportAddressCode    string  `db:"importAddressCode"`
+	AddressCode          string  `db:"addressCode"`
+	AddressDetail        string  `db:"addressDetail"`
+	PostalCode           string  `db:"postalCode"`
+	City                 string  `db:"city"`
+	ProductNo            string  `db:"productNo"`
+	Description          string  `db:"description"`
+	Mrn                  string  `db:"mrn"`
+	Mode                 string  `db:"mode"`
+	CompanyName          string  `db:"companyName"`
+	InICPFile            string  `db:"hasInIcp"`
 }
 
 // TaxFileObject The object of the tax file

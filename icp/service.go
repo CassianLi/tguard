@@ -41,3 +41,16 @@ func MakeICPForDutyPart(dutyParty string, month string) (string, []string) {
 	errs := icp.Errors
 	return filename, errs
 }
+
+// MakeICPByVatNo Make ICP file by VAt No.
+func MakeICPByVatNo(vatNo string) (string, []string) {
+	log.Printf("Making ICP by vat no %s  \n", vatNo)
+	icp := &FileOfICPForVAT{
+		VatNo: vatNo,
+	}
+
+	icp.QueryCustomsIDs()
+	filename := icp.GenerateICP()
+	errs := icp.Errors
+	return filename, errs
+}
