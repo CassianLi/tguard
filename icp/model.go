@@ -79,34 +79,34 @@ type TaxObject struct {
 	ItemNumber           string `db:"itemnr"`
 	Destined             string `db:"destinedNumber"`
 	ProcessCode          string
-	ProcessStatus        int     `db:"processingStatus"`
-	CustomsId            string  `db:"customs_id"`
-	InvoiceDate          string  `db:"invoiceDate"`
-	Currency             string  `db:"currency"`
-	LocalCurrencyValue   float64 `db:"localCurrencyValue"`
-	ImportDuty           float64 `db:"importDuty"`
-	DutchCost            string  `db:"dutchCost"`
-	DutchVat             string  `db:"dutchVat"`
-	HsCode               string  `db:"hsCode"`
-	NetWeight            float64 `db:"netWeight"`
-	Quantity             int     `db:"quantity"`
-	CountryPreFix        string  `db:"countryPreFix"`
-	DutyParty            string  `db:"dutyParty"`
-	PartnerName          string  `db:"partnerName"`
-	CountryOfDestination string  `db:"countryOfDestination"`
-	VatNo                string  `db:"vatNo"`
-	EoriNo               string  `db:"eoriNo"`
-	ImportAddressCode    string  `db:"importAddressCode"`
-	AddressCode          string  `db:"addressCode"`
-	AddressDetail        string  `db:"addressDetail"`
-	PostalCode           string  `db:"postalCode"`
-	City                 string  `db:"city"`
-	ProductNo            string  `db:"productNo"`
-	Description          string  `db:"description"`
-	Mrn                  string  `db:"mrn"`
-	Mode                 string  `db:"mode"`
-	CompanyName          string  `db:"companyName"`
-	InICPFile            string  `db:"hasInIcp"`
+	ProcessStatus        int            `db:"processingStatus"`
+	CustomsId            string         `db:"customs_id"`
+	InvoiceDate          string         `db:"invoiceDate"`
+	Currency             string         `db:"currency"`
+	LocalCurrencyValue   float64        `db:"localCurrencyValue"`
+	ImportDuty           float64        `db:"importDuty"`
+	DutchCost            string         `db:"dutchCost"`
+	DutchVat             string         `db:"dutchVat"`
+	HsCode               string         `db:"hsCode"`
+	NetWeight            float64        `db:"netWeight"`
+	Quantity             int            `db:"quantity"`
+	CountryPreFix        string         `db:"countryPreFix"`
+	DutyParty            sql.NullString `db:"dutyParty"`
+	PartnerName          string         `db:"partnerName"`
+	CountryOfDestination string         `db:"countryOfDestination"`
+	VatNo                string         `db:"vatNo"`
+	EoriNo               sql.NullString `db:"eoriNo"`
+	ImportAddressCode    string         `db:"importAddressCode"`
+	AddressCode          string         `db:"addressCode"`
+	AddressDetail        sql.NullString `db:"addressDetail"`
+	PostalCode           sql.NullString `db:"postalCode"`
+	City                 sql.NullString `db:"city"`
+	ProductNo            string         `db:"productNo"`
+	Description          string         `db:"description"`
+	Mrn                  string         `db:"mrn"`
+	Mode                 string         `db:"mode"`
+	CompanyName          string         `db:"companyName"`
+	InICPFile            sql.NullString `db:"hasInIcp"`
 }
 
 // TaxFileObject The object of the tax file
