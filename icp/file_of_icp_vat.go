@@ -36,6 +36,7 @@ func (f *FileOfICPForVAT) QueryCustomsIDs() {
 	log.Printf("vat:%s", f.VatNo)
 	err := global.Db.Select(&ids, QueryCustomsIDsByVatSql, f.VatNo)
 	if err != nil || len(ids) == 0 {
+		fmt.Println("Query customs ids failed, err: ", err)
 		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs vat no: %s", f.VatNo))
 	}
 	log.Printf("Total cusotms: %d", len(ids))

@@ -1,6 +1,7 @@
 package icp
 
 import (
+	"fmt"
 	"log"
 	"sysafari.com/customs/tguard/global"
 )
@@ -52,5 +53,6 @@ func MakeICPByVatNo(vatNo string) (string, []string) {
 	icp.QueryCustomsIDs()
 	filename := icp.GenerateICP()
 	errs := icp.Errors
+	fmt.Println("errors: ", errs)
 	return filename, errs
 }
