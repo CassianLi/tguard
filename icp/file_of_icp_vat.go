@@ -129,7 +129,7 @@ func (f *FileOfICPForVAT) readyICPFileInfo() {
 			return
 		}
 		date, t := dt.Format(FileNameDateLayout), dt.Format(FileNameTimeLayout)
-		f.FileName = fmt.Sprintf("VAT_%s_%s_%s.xlsx", f.VatNo, date, t)
+		f.FileName = fmt.Sprintf("VAT%s_%s_%s.xlsx", f.VatNo, date, t)
 	}
 
 	year, month := utils.GetCurrentYearMonth(dt)
