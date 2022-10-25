@@ -122,6 +122,8 @@ type TaxFileObject struct {
 // PodFileObject The object of the pod file
 type PodFileObject struct {
 	Sn          int            `db:"sn"`
+	BillNo      string         `db:"bill_no"`
+	CustomsId   string         `db:"customs_id"`
 	Mrn         string         `db:"mrn"`
 	TrackingNo  string         `db:"tracking_no"`
 	PodFileLink sql.NullString `db:"uri"`

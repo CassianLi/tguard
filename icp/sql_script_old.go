@@ -9,7 +9,7 @@ const (
 	QueryCustomsIDsByVatSql = `SELECT DISTINCT customs_id
 FROM base_address a
          LEFT JOIN base_customs c ON a.address_code = c.importer
-WHERE a.vat_no = ? and c.customs_id is not null ;`
+WHERE a.vat_no = ? and c.declare_status='NORMAL' and c.customs_id is not null limit 2;`
 
 	// QueryOldICPFillDataSql 老版本一次查询customs_id 所有数据
 	QueryOldICPFillDataSql = `SELECT b.bill_no ,                                                

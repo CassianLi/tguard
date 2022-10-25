@@ -91,9 +91,12 @@ WHERE c.customs_id = ? ;`
 	QueryCustomsHasInICPNameSql = `	SELECT GROUP_CONCAT(distinct sic.icp_name) FROM service_icp_customs sic WHERE sic.customs_id = ? GROUP BY customs_id;`
 
 	// QueryCustomsTrackingPodSql Query the customs' tracking pod
-	QueryCustomsTrackingPodSql = `SELECT ? AS mrn, 
+	QueryCustomsTrackingPodSql = `SELECT b.bill_no,c.customs_id,
+       c.mrn AS mrn, 
        t.tracking_no, bf.uri
 FROM base_reference_tracking t
+    	 INNER JOIN base_bill b ON t.bill_id = b.bill_id
+    	 INNER JOIN base_customs c ON t.customs_id = c.customs_id
          LEFT JOIN base_track_logistics_info btli ON t.tracking_no = btli.tracking_no AND btli.index_no = 0
          LEFT JOIN base_file bf ON bf.id = btli.file_id
 WHERE t.customs_id = ? ;`

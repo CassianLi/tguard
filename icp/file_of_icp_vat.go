@@ -178,7 +178,7 @@ func (f *FileOfICPForVAT) saveICPInfoIntoDB(status bool) {
 	dt := time.Now()
 
 	serviceIcp := &ServiceICP{
-		DutyParty: fmt.Sprintf("VAT_%s", f.VatNo),
+		DutyParty: f.VatNo,
 		Name:      f.FileName,
 		Year:      dt.Year(),
 		Month:     int(dt.Month()),

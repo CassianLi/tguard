@@ -101,7 +101,7 @@ func FillPodSheet(file *excelize.File, sheetName string, podFileData []PodFileOb
 	log.Println("POD sheet name: ", sheetName)
 	file.NewSheet(sheetName)
 
-	TaxSheetHeaders := &[]interface{}{"SN", "MRN No.", "POD Link"}
+	TaxSheetHeaders := &[]interface{}{"SN", "Bill No.", "Customs ID", "MRN No.", "Tracing No.", "POD Link", "Invoice"}
 
 	err := file.SetSheetRow(sheetName, "A1", TaxSheetHeaders)
 	if err != nil {
@@ -112,8 +112,11 @@ func FillPodSheet(file *excelize.File, sheetName string, podFileData []PodFileOb
 		sn := i + 1
 		idx := sn + 1
 		err = file.SetCellInt(sheetName, fmt.Sprintf("A%d", idx), sn)
-		err = file.SetCellStr(sheetName, fmt.Sprintf("B%d", idx), datum.Mrn)
-		err = file.SetCellStr(sheetName, fmt.Sprintf("C%d", idx), datum.PodFileLink.String)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("B%d", idx), datum.BillNo)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("C%d", idx), datum.CustomsId)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("D%d", idx), datum.Mrn)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("E%d", idx), datum.TrackingNo)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("F%d", idx), datum.PodFileLink.String)
 
 		if err != nil {
 			return err

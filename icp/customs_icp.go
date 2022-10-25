@@ -154,7 +154,7 @@ func (icp *CustomsICP) queryTaxFileData() {
 // queryPodFileData Query the fill data of the pod file table
 func (icp *CustomsICP) queryPodFileData() {
 	var podFiles []PodFileObject
-	err := global.Db.Select(&podFiles, QueryCustomsTrackingPodSql, icp.Mrn, icp.CustomsId)
+	err := global.Db.Select(&podFiles, QueryCustomsTrackingPodSql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query tracking pod  failed.%v", icp.CustomsId, err))
 	}
