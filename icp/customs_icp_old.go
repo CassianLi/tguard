@@ -59,7 +59,7 @@ func (icp *CustomsICPOld) queryTaxFileData() {
 // queryPodFileData Query the fill data of the pod file table
 func (icp *CustomsICPOld) queryPodFileData() {
 	var customsServiceKey CustomsServiceKeyObject
-	err := global.Db.Select(&customsServiceKey, QueryCustomsServiceKeySql, icp.CustomsId)
+	err := global.Db.Get(&customsServiceKey, QueryCustomsServiceKeySql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query service_key  failed.%v", icp.CustomsId, err))
 	}
