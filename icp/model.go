@@ -128,3 +128,9 @@ type PodFileObject struct {
 	TrackingNo  string         `db:"tracking_no"`
 	PodFileLink sql.NullString `db:"uri"`
 }
+
+type CustomsServiceKeyObject struct {
+	CustomsId  string `db:"customs_id"`
+	MinIndexNo int    `db:"min_index_no"`
+	ServiceKey string `db:"service_key"`
+}

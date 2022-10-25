@@ -101,6 +101,27 @@ FROM base_reference_tracking t
          LEFT JOIN base_file bf ON bf.id = btli.file_id
 WHERE t.customs_id = ? ;`
 
+	// QueryCustomsServiceKeySql Query the Customs service key
+	QueryCustomsServiceKeySql = `SELECT t.customs_id, MIN(index_no) AS min_index_no, br.service_key
+FROM base_reference_tracking t
+         INNER JOIN base_reference br ON t.reference = br.reference
+WHERE t.customs_id =?;`
+
+	// QueryCustomsTrackingPodDeclareOnlySql Query the pod if the customs use DECLARE ONLY
+	QueryCustomsTrackingPodDeclareOnlySql = `SELECT b.bill_no,
+       c.customs_id,
+       c.mrn AS mrn,
+       t.tracking_no,
+       MIN(t.index_no),
+       bf.uri
+FROM base_reference_tracking t
+         INNER JOIN base_bill b ON t.bill_id = b.bill_id
+         INNER JOIN base_customs c ON t.customs_id = c.customs_id
+         LEFT JOIN base_track_logistics_info btli
+                   ON t.tracking_no = btli.tracking_no AND btli.index_no = 0
+         LEFT JOIN base_file bf ON bf.id = btli.file_id
+WHERE t.customs_id = ? ;`
+
 	// InsertServiceICP Insert row into service_icp
 	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status) 
 values (:duty_part, :name, :year, :month, :icp_date,:total,:status);`

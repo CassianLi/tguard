@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/xuri/excelize/v2"
 	"log"
+	"strings"
 )
 
 // FillTaxSheet fill tax sheet
@@ -101,7 +102,7 @@ func FillPodSheet(file *excelize.File, sheetName string, podFileData []PodFileOb
 	log.Println("POD sheet name: ", sheetName)
 	file.NewSheet(sheetName)
 
-	TaxSheetHeaders := &[]interface{}{"SN", "Bill No.", "Customs ID", "MRN No.", "Tracing No.", "POD Link", "Invoice"}
+	TaxSheetHeaders := &[]interface{}{"SN", "Bill No.", "Invoice Number", "MRN No.", "Tracing No.", "POD Filename", "POD Link", "Invoice"}
 
 	err := file.SetSheetRow(sheetName, "A1", TaxSheetHeaders)
 	if err != nil {
@@ -111,12 +112,20 @@ func FillPodSheet(file *excelize.File, sheetName string, podFileData []PodFileOb
 	for i, datum := range podFileData {
 		sn := i + 1
 		idx := sn + 1
+		link := datum.PodFileLink.String
+		podName := ""
+		if link != "" {
+			pt := strings.Split(link, "/")
+			podName = pt[len(pt)-1]
+		}
+
 		err = file.SetCellInt(sheetName, fmt.Sprintf("A%d", idx), sn)
 		err = file.SetCellStr(sheetName, fmt.Sprintf("B%d", idx), datum.BillNo)
 		err = file.SetCellStr(sheetName, fmt.Sprintf("C%d", idx), datum.CustomsId)
 		err = file.SetCellStr(sheetName, fmt.Sprintf("D%d", idx), datum.Mrn)
 		err = file.SetCellStr(sheetName, fmt.Sprintf("E%d", idx), datum.TrackingNo)
-		err = file.SetCellStr(sheetName, fmt.Sprintf("F%d", idx), datum.PodFileLink.String)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("F%d", idx), podName)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("G%d", idx), link)
 
 		if err != nil {
 			return err

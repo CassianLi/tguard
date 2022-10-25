@@ -153,10 +153,22 @@ func (icp *CustomsICP) queryTaxFileData() {
 
 // queryPodFileData Query the fill data of the pod file table
 func (icp *CustomsICP) queryPodFileData() {
+	var customsServiceKey CustomsServiceKeyObject
+	err := global.Db.Select(&customsServiceKey, QueryCustomsServiceKeySql, icp.CustomsId)
+	if err != nil {
+		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query service_key  failed.%v", icp.CustomsId, err))
+	}
+
 	var podFiles []PodFileObject
-	err := global.Db.Select(&podFiles, QueryCustomsTrackingPodSql, icp.CustomsId)
+	if "DECLARATION ONLY" == customsServiceKey.ServiceKey {
+		err = global.Db.Select(&podFiles, QueryCustomsTrackingPodDeclareOnlySql, icp.CustomsId)
+	} else {
+		err = global.Db.Select(&podFiles, QueryCustomsTrackingPodSql, icp.CustomsId)
+	}
+
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query tracking pod  failed.%v", icp.CustomsId, err))
 	}
+
 	icp.PodFileData = append(icp.PodFileData, podFiles...)
 }
