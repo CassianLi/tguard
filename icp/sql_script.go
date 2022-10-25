@@ -112,7 +112,7 @@ WHERE t.customs_id =?;`
        c.customs_id,
        c.mrn AS mrn,
        t.tracking_no,
-       MIN(t.index_no),
+       MIN(t.index_no) as min_index_no,
        bf.uri
 FROM base_reference_tracking t
          INNER JOIN base_bill b ON t.bill_id = b.bill_id

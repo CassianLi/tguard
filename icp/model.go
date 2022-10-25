@@ -125,6 +125,7 @@ type PodFileObject struct {
 	BillNo      string         `db:"bill_no"`
 	CustomsId   string         `db:"customs_id"`
 	Mrn         string         `db:"mrn"`
+	MinIndexNo  string         `db:"min_index_no"`
 	TrackingNo  string         `db:"tracking_no"`
 	PodFileLink sql.NullString `db:"uri"`
 }
