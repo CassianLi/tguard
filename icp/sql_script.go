@@ -14,7 +14,8 @@ WHERE LENGTH(c.duty_party) > 5
 	QueryCustomsIdForICPWithinOneMonthSql = `SELECT lcp.customs_id
 FROM log_clearance_process lcp
          INNER JOIN base_customs c ON lcp.customs_id = c.customs_id
-WHERE c.duty_party = ?
+WHERE c.declare_version = 0 
+  AND  c.duty_party = ?
   AND DATE_FORMAT(lcp.gmt_create, '%Y-%m') = ?
   AND (lcp.process_code = 'TAX'
     OR lcp.process_code = 'TMP_TAX');`
