@@ -46,7 +46,7 @@ WHERE bc.customs_id = ?`
        lcp.process_code,
        DATE_FORMAT(lcp.gmt_create, '%Y/%m/%d')    AS invoiceDate,
        sca.product_no,
-       sca.hs_code,
+       IFNULL(scvp.hs_code, sca.hs_code) AS hs_code,
        sca.net_weight,
        sca.quantity,
        bd.description,
