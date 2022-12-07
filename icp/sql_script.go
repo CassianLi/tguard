@@ -11,7 +11,7 @@ WHERE LENGTH(c.duty_party) > 5
     OR lcp.process_code = 'TMP_TAX');`
 
 	// QueryCustomsIdForICPWithinOneMonthSql SQL is used to query the CustomsId of tax receipts within a month
-	QueryCustomsIdForICPWithinOneMonthSql = `SELECT lcp.customs_id
+	QueryCustomsIdForICPWithinOneMonthSql = `SELECT distinct lcp.customs_id
 FROM log_clearance_process lcp
          INNER JOIN base_customs c ON lcp.customs_id = c.customs_id
 WHERE c.declare_version = 0 
@@ -59,7 +59,7 @@ FROM log_clearance_process lcp
          INNER JOIN service_customs_value_process scvp ON sca.customs_value_process_id = scvp.id
          INNER JOIN base_description bd ON scvp.description_id = bd.id
 WHERE lcp.customs_id = ? AND lcp.process_code = ?
-ORDER BY bct.itemnr;`
+ORDER BY bct.itemnr, bct.tax_type;`
 
 	// QueryCustomsICPImporterSql The SQL used to query importer info for customs
 	QueryCustomsICPImporterSql = `SELECT a.vat_no,
