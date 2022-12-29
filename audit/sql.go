@@ -5,7 +5,7 @@ const (
 	QueryCustomsSubmittedBetweenDate = `SELECT DISTINCT customs_id
 FROM log_customs_state
 WHERE state = 'SUBMITTED'
-  AND DATE_FORMAT(gmt_create, '%Y-%m') = ? limit 10;`
+  AND DATE_FORMAT(gmt_create, '%Y-%m') = ?;`
 
 	QueryCustomsAuditData = `SELECT bb.bill_no,
        sca.customs_id,
