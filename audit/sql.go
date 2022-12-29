@@ -21,8 +21,8 @@ WHERE state = 'SUBMITTED'
 FROM service_customs_article sca
          INNER JOIN base_description bd ON sca.product_no = bd.product_no AND sca.country = bd.country
          INNER JOIN base_customs bc ON sca.customs_id = bc.customs_id
-         LEFT JOIN service_bill_customs sbc ON sca.customs_id = sbc.customs_id
-         LEFT JOIN base_bill bb ON sbc.bill_id = bb.bill_id
+         INNER JOIN service_bill_customs sbc ON sca.customs_id = sbc.customs_id
+         INNER JOIN base_bill bb ON sbc.bill_id = bb.bill_id
          LEFT JOIN service_customs_value_process scvp ON sca.customs_value_process_id = scvp.id
 WHERE sca.customs_id =?`
 )

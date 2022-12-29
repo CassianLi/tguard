@@ -3,7 +3,7 @@ package audit
 import "database/sql"
 
 type CustomsAuditObject struct {
-	BillNo          string         `db:"bill_no"`
+	BillNo          sql.NullString `db:"bill_no"`
 	CustomsId       string         `db:"customs_id"`
 	InvoiceDate     sql.NullString `db:"invoice_date"`
 	Mrn             sql.NullString `db:"mrn"`

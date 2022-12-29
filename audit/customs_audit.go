@@ -74,7 +74,7 @@ func (ca *CustomsAudit) fileAuditExcel(fp string) error {
 
 	for i, datum := range ca.AuditData {
 		idx := i + 2
-		err = file.SetCellStr(sname, fmt.Sprintf("A%d", idx), datum.BillNo)
+		err = file.SetCellStr(sname, fmt.Sprintf("A%d", idx), datum.BillNo.String)
 		err = file.SetCellStr(sname, fmt.Sprintf("B%d", idx), datum.CustomsId)
 		err = file.SetCellStr(sname, fmt.Sprintf("C%d", idx), datum.InvoiceDate.String)
 		err = file.SetCellStr(sname, fmt.Sprintf("D%d", idx), datum.ItemNumber)
