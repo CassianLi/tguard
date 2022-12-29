@@ -88,14 +88,14 @@ func (ca *CustomsAudit) fileAuditExcel(fp string) error {
 		screenshotName := datum.PriceScreenshot.String
 		if screenshotName != "" && !strings.Contains(screenshotName, "http") {
 			tmpPath := filepath.Join(tmpDir, screenshotName)
-			err = ossClient.DownloadOssFile(screenshotName, tmpPath)
-			if err == nil {
+			ossErr := ossClient.DownloadOssFile(screenshotName, tmpPath)
+			if ossErr == nil {
 				absPaht, _ := filepath.Abs(tmpPath)
 				fmt.Println("abs path:", absPaht)
-				err = file.SetRowHeight(sname, idx, 200)
-				err = file.AddPicture(sname, fmt.Sprintf("K%d", idx), tmpPath, `{"autofit": true}`)
-				if err != nil {
-					log.Panic(err)
+				ossErr = file.SetRowHeight(sname, idx, 200)
+				ossErr = file.AddPicture(sname, fmt.Sprintf("K%d", idx), tmpPath, `{"autofit": true}`)
+				if ossErr != nil {
+					fmt.Println(err)
 				}
 			}
 		}
