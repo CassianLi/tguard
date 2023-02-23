@@ -2,7 +2,7 @@ package icp
 
 import (
 	"fmt"
-	"log"
+	"strings"
 	"sysafari.com/customs/tguard/global"
 )
 
@@ -10,6 +10,7 @@ const (
 	ProcessCodeTax        = "TAX"
 	ProcessCodeTemTax     = "TMP_TAX"
 	TaxFileUrlPrefixForNL = "https://board.sysafari.com/declarefile/-1/18-"
+	TaxFileUrlPrefixForBE = "https://board.sysafari.com/declarefile-be?customsId=CUSTOMS_ID&statusCode=09"
 )
 
 type CustomsICP struct {
@@ -156,8 +157,16 @@ func (icp *CustomsICP) queryTaxFileData() {
 			TaxFileLink: TaxFileUrlPrefixForNL + icp.CustomsId,
 		}
 		icp.TaxFileData = append(icp.TaxFileData, tf)
-	} else {
-		log.Printf("Customs: %s not declared in NL.\n", icp.CustomsId)
+	}
+
+	if "BE" == icp.DeclareCountry {
+		tf := TaxFileObject{
+			Mrn:         icp.Mrn,
+			CustomsId:   icp.CustomsId,
+			TaxType:     taxType,
+			TaxFileLink: strings.ReplaceAll(TaxFileUrlPrefixForBE, "CUSTOMS_ID", icp.CustomsId),
+		}
+		icp.TaxFileData = append(icp.TaxFileData, tf)
 	}
 
 }
