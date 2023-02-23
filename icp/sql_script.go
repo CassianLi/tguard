@@ -153,10 +153,10 @@ FROM base_reference_tracking t
 WHERE t.customs_id = ? ;`
 
 	// InsertServiceICP Insert row into service_icp
-	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status) 
-values (:duty_part, :name, :year, :month, :icp_date,:total,:status);`
+	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status, vat_note) 
+values (:duty_part, :name, :year, :month, :icp_date,:total,:status,:vat_note);`
 
 	// InsertServiceICPCustoms Insert row into service_icp_customs
-	InsertServiceICPCustoms = `INSERT INTO service_icp_customs (icp_name, xml_id, customs_id, tax_type, vat_note, in_excel) 
-values (:icp_name, '', :customs_id, :tax_type, :vat_note, :in_excel);`
+	InsertServiceICPCustoms = `INSERT INTO service_icp_customs (icp_name, xml_id, customs_id, tax_type,  in_excel) 
+values (:icp_name, '', :customs_id, :tax_type, :in_excel);`
 )

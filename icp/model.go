@@ -60,6 +60,7 @@ type ServiceICP struct {
 	IcpDate   string `db:"icp_date"`
 	Total     int    `db:"total"`
 	Status    bool   `db:"status"`
+	VatNote   string `db:"vat_note"`
 }
 
 // ServiceICPCustoms sysafari.service_icp_customs
@@ -67,7 +68,6 @@ type ServiceICPCustoms struct {
 	IcpName   string `db:"icp_name"`
 	CustomsId string `db:"customs_id"`
 	TaxType   int    `db:"tax_type"`
-	VatNote   string `db:"vat_note"`
 	InExcel   bool   `db:"in_excel"`
 }
 

@@ -177,6 +177,7 @@ func (f *FileOfICP) saveICPInfoIntoDB(status bool) {
 		IcpDate:   time.Now().UTC().Format("2006-01-02 15:04:05"),
 		Total:     len(f.CustomsIDs),
 		Status:    status,
+		VatNote:   f.VatNoteZipFileName,
 	}
 	_, err = global.Db.NamedExec(InsertServiceICP, serviceIcp)
 	if err != nil {
@@ -194,7 +195,6 @@ func (f *FileOfICP) saveCustomsInfoWithinICP() {
 			IcpName:   f.FileName,
 			CustomsId: customsId,
 			TaxType:   i2.TaxType,
-			VatNote:   f.VatNoteZipFileName,
 			InExcel:   utils.In(customsId, f.CustomsIDs),
 		}
 		customsICPs = append(customsICPs, ci)
@@ -202,7 +202,7 @@ func (f *FileOfICP) saveCustomsInfoWithinICP() {
 
 	_, err := global.Db.NamedExec(InsertServiceICPCustoms, customsICPs)
 	if err != nil {
-		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s)'s customs information failed: %v", f.FileName, err))
+		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s) and customs information failed: %v", f.FileName, err))
 	}
 
 }
