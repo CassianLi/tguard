@@ -67,6 +67,7 @@ type ServiceICPCustoms struct {
 	IcpName   string `db:"icp_name"`
 	CustomsId string `db:"customs_id"`
 	TaxType   int    `db:"tax_type"`
+	VatNote   string `db:"vat_note"`
 	InExcel   bool   `db:"in_excel"`
 }
 

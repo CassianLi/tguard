@@ -10,7 +10,21 @@ mysql:
   # max idle connections: default 10
   max-idle-connections: 10
 
+zip:
+  # 是否打开vat-note 功能
+  vat-note-open: true
+  vat-note-dir:
+  vat-note-download-uri: http://localhost:7006/generatePdf/vatNote/CUSTOMS_ID
+
 icp:
-  # 秒 分 时 日 月 周
-  crontab: '* * 2 1 * *'
   save-dir: tmp/
+
+audit:
+  tmp-dir: tmp/audit
+  save-dir: tmp/audit
+
+oss:
+  endpoint:
+  access-key:
+  access-secret:
+  bucket:

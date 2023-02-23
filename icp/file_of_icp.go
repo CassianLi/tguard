@@ -35,8 +35,24 @@ type FileOfICP struct {
 	FilePath string `json:"file_path"`
 	// FileName The ICP file name
 	FileName string `json:"file_name"`
+	// VatNoteZipFileName
+	VatNoteZipFileName string `json:"vat_noes_zip_file_name"`
+	// VatNoteZipFilePath
+	VatNoteZipFilePath string `json:"vat_noes_zip_file_path"`
+	// VatNoteDownloadDir
+	VatNoteDownloadDir string `json:"vat_note_download_dir"`
 	// Errors The ICP errors
 	Errors []string `json:"errors"`
+}
+
+// DutyNeedVatNote Whether duty needs vat note
+func (f *FileOfICP) DutyNeedVatNote() bool {
+	var isNeedVatNote bool
+	err := global.Db.Get(&isNeedVatNote, QueryDutyNeedVatNote, f.DutyParty)
+	if err != nil {
+		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs for duty party %s with month %s", f.DutyParty, f.Month))
+	}
+	return isNeedVatNote
 }
 
 // QueryCustomsIDs Query customs IDs between the startDate and endDate
@@ -48,6 +64,74 @@ func (f *FileOfICP) QueryCustomsIDs() {
 	}
 	log.Printf("Total cusotms: %d", len(customsIds))
 	f.CustomsIDs = customsIds
+}
+
+// readyForVatNote Ready to generate vat note
+func (f *FileOfICP) readyForVatNote() {
+	monthDate := time.Now()
+	if f.Month != "" {
+		monthF, err := time.Parse("2006-01", f.Month)
+		if err != nil {
+			f.Errors = append(f.Errors, fmt.Sprintf("ICP's month format error, %s.", f.Month))
+		}
+		monthDate = monthF
+	}
+
+	vatNoteZipFileName := fmt.Sprintf("%s-%s-vatnote.zip", monthDate.Format("2006-01"), f.DutyParty)
+	fmt.Println("f.VatNoteZipFileName: ", vatNoteZipFileName)
+
+	// vat Note save dir
+	vatNoteRootDir := viper.GetString("zip.vat-note-dir")
+	vatNoteDir := filepath.Join(vatNoteRootDir, monthDate.Format("2006"))
+
+	fmt.Println("Vat note save dir: ", vatNoteDir)
+
+	if !utils.IsExists(vatNoteDir) && !utils.CreateDir(vatNoteDir) {
+		f.Errors = append(f.Errors, fmt.Sprintf("Create vat note zip save dir: %s, failed.", vatNoteDir))
+	}
+
+	vatNoteDownloadDir := filepath.Join(vatNoteDir, monthDate.Format("2006-01"))
+	fmt.Println("Vat note download dir: ", vatNoteDownloadDir)
+	if !utils.IsExists(vatNoteDownloadDir) && !utils.CreateDir(vatNoteDownloadDir) {
+		f.Errors = append(f.Errors, fmt.Sprintf("Create vat note download dir: %s, failed.", vatNoteDownloadDir))
+	}
+
+	f.VatNoteZipFileName = vatNoteZipFileName
+	f.VatNoteZipFilePath = filepath.Join(vatNoteDir, vatNoteZipFileName)
+	f.VatNoteDownloadDir = vatNoteDownloadDir
+}
+
+// downloadVatNoteAndMakeZip Download vat note file of customs and compress them to zip
+func downloadVatNoteAndMakeZip(customsIds []string, downloadDir string, zipFileName string) {
+	vatNoteUri := viper.GetString("zip.vat-note-download-uri")
+	for i, d := range customsIds {
+		fmt.Printf("Downloading vat note idx: %d ,customsId:%s \n", i, d)
+		uri := strings.ReplaceAll(vatNoteUri, "CUSTOMS_ID", d)
+		downloadSavePath := filepath.Join(downloadDir, d+".pdf")
+
+		fmt.Printf("Downloading vat note uri: %s, save to: %s \n", uri, downloadSavePath)
+		err := utils.DownloadFileTo(uri, downloadSavePath)
+		if err != nil {
+			fmt.Printf("Download vat note file failed, uri: %s, err:%v \n", uri, err)
+		}
+	}
+
+	err := utils.ZipCompose(downloadDir, zipFileName)
+	if err != nil {
+		fmt.Printf("ZipCompose failed,err:%v \n", err)
+	}
+}
+
+// GenerateVatNotesZip Download vat note file of customs and then make compression package
+func (f *FileOfICP) GenerateVatNotesZip() {
+	f.readyForVatNote()
+
+	if len(f.Errors) > 0 {
+		fmt.Printf("There has error: %s, cant make vat-note zip.\n", f.Errors)
+	} else {
+		fmt.Println("Will synchronize production vat-note zip.")
+		go downloadVatNoteAndMakeZip(f.CustomsIDs, f.VatNoteDownloadDir, f.VatNoteZipFilePath)
+	}
 }
 
 // GenerateICP Begin to generate ICP file
@@ -110,6 +194,7 @@ func (f *FileOfICP) saveCustomsInfoWithinICP() {
 			IcpName:   f.FileName,
 			CustomsId: customsId,
 			TaxType:   i2.TaxType,
+			VatNote:   f.VatNoteZipFileName,
 			InExcel:   utils.In(customsId, f.CustomsIDs),
 		}
 		customsICPs = append(customsICPs, ci)

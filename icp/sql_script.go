@@ -34,6 +34,9 @@ FROM base_customs bc
          LEFT JOIN config_tax_agency cta ON bc.duty_party = cta.vat_number
 WHERE bc.customs_id = ?`
 
+	// QueryDutyNeedVatNote Query duty weather need vat note
+	QueryDutyNeedVatNote = `select is_need_vat_note from config_tax_agency where vat_number =?`
+
 	// QueryCustomsICPTaxSql The SQL used to query tax info of customs
 	QueryCustomsICPTaxSql = `SELECT bct.tax_type,
        bct.itemnr,
@@ -128,6 +131,6 @@ WHERE t.customs_id = ? ;`
 values (:duty_part, :name, :year, :month, :icp_date,:total,:status);`
 
 	// InsertServiceICPCustoms Insert row into service_icp_customs
-	InsertServiceICPCustoms = `INSERT INTO service_icp_customs (icp_name, xml_id, customs_id, tax_type, in_excel) 
-values (:icp_name, '', :customs_id, :tax_type, :in_excel);`
+	InsertServiceICPCustoms = `INSERT INTO service_icp_customs (icp_name, xml_id, customs_id, tax_type, vat_note, in_excel) 
+values (:icp_name, '', :customs_id, :tax_type, :vat_note, :in_excel);`
 )

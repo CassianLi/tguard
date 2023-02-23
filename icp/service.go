@@ -2,6 +2,7 @@ package icp
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"log"
 	"sysafari.com/customs/tguard/global"
 )
@@ -38,6 +39,16 @@ func MakeICPForDutyPart(dutyParty string, month string) (string, []string) {
 	}
 
 	icp.QueryCustomsIDs()
+
+	//
+	openVatNote := viper.GetBool("zip.vat-note-open")
+	if openVatNote {
+		fmt.Println("Need check whether duty need vat-note..")
+		if icp.DutyNeedVatNote() {
+			icp.GenerateVatNotesZip()
+		}
+	}
+
 	filename := icp.GenerateICP()
 	errs := icp.Errors
 	return filename, errs
