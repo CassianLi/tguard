@@ -64,6 +64,33 @@ FROM log_clearance_process lcp
 WHERE lcp.customs_id = ? AND lcp.process_code = ?
 ORDER BY bct.itemnr, bct.tax_type;`
 
+	// QueryCustomsICPTaxSqlNoneEc The SQL used to query tax info of none-ec customs
+	QueryCustomsICPTaxSqlNoneEc = `SELECT bct.tax_type,
+       bct.itemnr,
+       IF(bct.tax_type = 'A00', '4a', '3b')       AS destined,
+       bct.declared_amount,
+       bct.tax_fee                                AS importDuty,
+       IF(bct.tax_type = 'A00', '0.00', 't.b.d.') AS dutchCost,
+       '0.00'                                     AS dutchVat,
+       IF(bct.tax_type = 'A00', 'NL', '')         AS countryPreFix,
+       lcp.process_code,
+       DATE_FORMAT(lcp.gmt_create, '%Y/%m/%d')    AS invoiceDate,
+       sca.product_no,
+       sca.hs_code,
+       sca.net_weight,
+       sca.quantity,
+       sca.customs_value_process_id,
+       bd.description,
+       'EUR'                                      AS currency
+FROM log_clearance_process lcp
+         INNER JOIN base_customs_tax bct ON bct.customs_id = lcp.customs_id AND
+                                            IF(lcp.process_code = 'TAX', bct.processing_status = 4,
+                                               bct.processing_status = 115)
+         INNER JOIN service_customs_article sca ON bct.customs_id = sca.customs_id AND bct.itemnr = sca.item_number
+         INNER JOIN base_description bd ON sca.product_no = bd.product_no AND bd.country = sca.country
+WHERE lcp.customs_id = ? AND lcp.process_code = ?
+ORDER BY bct.itemnr, bct.tax_type;`
+
 	// QueryCustomsICPImporterSql The SQL used to query importer info for customs
 	QueryCustomsICPImporterSql = `SELECT a.vat_no,
        a.eori_no,

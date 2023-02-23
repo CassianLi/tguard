@@ -130,7 +130,7 @@ func (f *FileOfICP) GenerateVatNotesZip() {
 		fmt.Printf("There has error: %s, cant make vat-note zip.\n", f.Errors)
 	} else {
 		fmt.Println("Will synchronize production vat-note zip.")
-		go downloadVatNoteAndMakeZip(f.CustomsIDs, f.VatNoteDownloadDir, f.VatNoteZipFilePath)
+		downloadVatNoteAndMakeZip(f.CustomsIDs, f.VatNoteDownloadDir, f.VatNoteZipFilePath)
 	}
 }
 

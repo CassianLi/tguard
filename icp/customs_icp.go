@@ -48,6 +48,17 @@ func (icp *CustomsICP) queryTaxData() {
 		// Query temporary tax information if official tax information is not available
 		err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSql, icp.CustomsId, ProcessCodeTemTax)
 	}
+
+	if err != nil || len(taxInfo) == 0 {
+		// Query none-ec sql tax information is not available
+		err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSqlNoneEc, icp.CustomsId, ProcessCodeTax)
+	}
+
+	if err != nil || len(taxInfo) == 0 {
+		// Query temporary tax information if official tax information is not available
+		err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSqlNoneEc, icp.CustomsId, ProcessCodeTemTax)
+	}
+
 	if err != nil || len(taxInfo) == 0 {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query tax info failed.%v", icp.CustomsId, err))
 	} else {
