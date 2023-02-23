@@ -79,7 +79,6 @@ ORDER BY bct.itemnr, bct.tax_type;`
        sca.hs_code,
        sca.net_weight,
        sca.quantity,
-       sca.customs_value_process_id,
        bd.description,
        'EUR'                                      AS currency
 FROM log_clearance_process lcp
