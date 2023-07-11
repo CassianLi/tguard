@@ -91,10 +91,11 @@ WHERE lcp.customs_id = ? AND lcp.process_code = ?
 ORDER BY bct.itemnr, bct.tax_type;`
 
 	// QueryCustomsICPImporterSql The SQL used to query importer info for customs
-	QueryCustomsICPImporterSql = `SELECT a.vat_no,
+	QueryCustomsICPImporterSql = `SELECT bc.vat_no,
        a.eori_no,
        a.address_code AS importerAddressCode
-FROM service_customs_address sca
+FROM   service_customs_address sca
+    INNER JOIN base_customs bc ON sca.customs_id = bc.customs_id
          INNER JOIN base_address a ON sca.address_code = a.address_code
 WHERE sca.customs_id = ?
   AND sca.type = 'IMPORTER';`
