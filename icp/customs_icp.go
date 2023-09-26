@@ -105,7 +105,7 @@ func (icp *CustomsICP) queryTaxData() {
 		icpFileNames = ""
 	}
 	if len(icp.Errors) == 0 {
-		taxData := combineToTaxData(icpBase, taxInfo, importerInfo, deliveryInfo, companyName, icpFileNames, hasInspectionFine)
+		taxData := combineToTaxData(icpBase, taxInfo, importerInfo, deliveryInfo, companyName, hasInspectionFine, icpFileNames)
 		icp.TaxData = taxData
 	}
 }
