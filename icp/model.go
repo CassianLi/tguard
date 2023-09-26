@@ -107,7 +107,9 @@ type TaxObject struct {
 	Mrn                  string         `db:"mrn"`
 	Mode                 string         `db:"mode"`
 	CompanyName          string         `db:"companyName"`
-	InICPFile            string         `db:"hasInIcp"`
+	// Yes
+	HasInspectionFine string `db:"hasInspectionFine"`
+	InICPFile         string `db:"hasInIcp"`
 }
 
 // TaxFileObject The object of the tax file

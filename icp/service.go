@@ -40,7 +40,6 @@ func MakeICPForDutyPart(dutyParty string, month string) (string, []string) {
 
 	icp.QueryCustomsIDs()
 
-	//
 	openVatNote := viper.GetBool("zip.vat-note-open")
 	if openVatNote {
 		fmt.Println("Need check whether duty need vat-note..")

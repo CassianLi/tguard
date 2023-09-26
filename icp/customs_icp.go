@@ -87,6 +87,17 @@ func (icp *CustomsICP) queryTaxData() {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query company name failed.%v", icp.CustomsId, err))
 	}
 
+	// Query customs has inspection fine
+	var inspectionFineCount int64
+	err = global.Db.Get(&inspectionFineCount, QueryCustomsHasInspectionFineSql, icp.CustomsId)
+	if err != nil {
+		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query inspection fine failed.%v", icp.CustomsId, err))
+	}
+	hasInspectionFine := ""
+	if inspectionFineCount > 0 {
+		hasInspectionFine = "Yes"
+	}
+
 	// into which icp file
 	var icpFileNames string
 	err = global.Db.Get(&icpFileNames, QueryCustomsHasInICPNameSql, icp.CustomsId)
@@ -94,13 +105,13 @@ func (icp *CustomsICP) queryTaxData() {
 		icpFileNames = ""
 	}
 	if len(icp.Errors) == 0 {
-		taxData := combineToTaxData(icpBase, taxInfo, importerInfo, deliveryInfo, companyName, icpFileNames)
+		taxData := combineToTaxData(icpBase, taxInfo, importerInfo, deliveryInfo, companyName, icpFileNames, hasInspectionFine)
 		icp.TaxData = taxData
 	}
 }
 
 // combineToTaxData The one that merges multiple objects is TaxObject
-func combineToTaxData(baseInfo CustomsICPBase, taxInfo []CustomsICPTax, importerInfo CustomsICPImporter, deliveryInfo CustomsICPDelivery, companyName string, hasInIcpName string) []TaxObject {
+func combineToTaxData(baseInfo CustomsICPBase, taxInfo []CustomsICPTax, importerInfo CustomsICPImporter, deliveryInfo CustomsICPDelivery, companyName, hasInspectionFine, hasInIcpName string) []TaxObject {
 	var taxData []TaxObject
 	for _, tax := range taxInfo {
 		t := TaxObject{
@@ -135,6 +146,7 @@ func combineToTaxData(baseInfo CustomsICPBase, taxInfo []CustomsICPTax, importer
 			PostalCode:           deliveryInfo.PostalCode,
 			City:                 deliveryInfo.City,
 			CompanyName:          companyName,
+			HasInspectionFine:    hasInspectionFine,
 			InICPFile:            hasInIcpName,
 		}
 		taxData = append(taxData, t)

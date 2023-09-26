@@ -153,6 +153,9 @@ FROM base_reference_tracking t
          LEFT JOIN base_file bf ON bf.id = btli.file_id
 WHERE t.customs_id = ? ;`
 
+	// QueryCustomsHasInspectionFineSql 查询报关单是否有过查验罚款
+	QueryCustomsHasInspectionFineSql = `SELECT COUNT(1) FROM log_clearance_process WHERE customs_id = ? and process_code='INSPECTION_FINE';`
+
 	// InsertServiceICP Insert row into service_icp
 	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status, vat_note) 
 values (:duty_part, :name, :year, :month, :icp_date,:total,:status,:vat_note);`

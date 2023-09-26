@@ -17,7 +17,7 @@ func FillTaxSheet(file *excelize.File, sheetName string, taxData []TaxObject) er
 		"Dutch Costs", "Ductch VAT", "Statistical Number", "Weight(KG)", "No. of Pieces", "Country Pre fix",
 		"VAT Registration Number", "Partner Name", "Country of Destination", "VAT Number", "EORI Number",
 		"Importer SS Code", "Address Code", "Address", "Postcode", "City", "Product No", "Description", "MRN",
-		"Company Name", "Mode", "ICP/115"}
+		"Company Name", "Mode", "HasInspectionFine", "ICP/115"}
 
 	err := file.SetSheetRow(sheetName, "A1", TaxSheetHeaders)
 	if err != nil {
@@ -60,7 +60,8 @@ func FillTaxSheet(file *excelize.File, sheetName string, taxData []TaxObject) er
 		err = file.SetCellStr(sheetName, fmt.Sprintf("AE%d", idx), datum.Mrn)
 		err = file.SetCellStr(sheetName, fmt.Sprintf("AF%d", idx), datum.CompanyName)
 		err = file.SetCellStr(sheetName, fmt.Sprintf("AG%d", idx), datum.Mode)
-		err = file.SetCellStr(sheetName, fmt.Sprintf("AH%d", idx), datum.InICPFile)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("AH%d", idx), datum.HasInspectionFine)
+		err = file.SetCellStr(sheetName, fmt.Sprintf("AI%d", idx), datum.InICPFile)
 
 		if err != nil {
 			return err
