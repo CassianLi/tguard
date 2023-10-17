@@ -107,13 +107,24 @@ func downloadVatNoteAndMakeZip(customsIds []string, downloadDir string, zipFileN
 	for i, d := range customsIds {
 		fmt.Printf("Downloading vat note idx: %d ,customsId:%s \n", i, d)
 		uri := strings.ReplaceAll(vatNoteUri, "CUSTOMS_ID", d)
-		downloadSavePath := filepath.Join(downloadDir, d+".pdf")
 
-		fmt.Printf("Downloading vat note uri: %s, save to: %s \n", uri, downloadSavePath)
-		err := utils.DownloadFileTo(uri, downloadSavePath)
+		vatNoteUri := strings.ReplaceAll(uri, "FILE_TYPE", "vatNote")
+		vatNotDownloadFile := filepath.Join(downloadDir, d+"_vat_note.pdf")
+
+		fmt.Printf("Downloading vat note uri: %s, save to: %s \n", uri, vatNotDownloadFile)
+		err := utils.DownloadFileTo(vatNoteUri, vatNotDownloadFile)
 		if err != nil {
 			fmt.Printf("Download vat note file failed, uri: %s, err:%v \n", uri, err)
 		}
+
+		transferDocUri := strings.ReplaceAll(uri, "FILE_TYPE", "transferDoc")
+		transferDownloadFile := filepath.Join(downloadDir, d+"_vat_note.pdf")
+		fmt.Printf("Downloading transfer doc uri: %s, save to: %s \n", uri, transferDownloadFile)
+		err = utils.DownloadFileTo(transferDocUri, transferDownloadFile)
+		if err != nil {
+			fmt.Printf("Download transfer doc file failed, uri: %s, err:%v \n", uri, err)
+		}
+
 	}
 
 	err := utils.ZipCompose(downloadDir, zipFileName)
