@@ -104,12 +104,18 @@ func (f *FileOfICP) readyForVatNote() {
 // downloadVatNoteAndMakeZip Download vat note file of customs and compress them to zip
 func downloadVatNoteAndMakeZip(customsIds []string, downloadDir string, zipFileName string) {
 	vatNoteUri := viper.GetString("zip.vat-note-download-uri")
+	vatNoteDir := filepath.Join(downloadDir, "vat-note")
+	utils.CreateDir(vatNoteDir)
+
+	transferDocDir := filepath.Join(downloadDir, "transfer-doc")
+	utils.CreateDir(transferDocDir)
+
 	for i, d := range customsIds {
 		fmt.Printf("Downloading vat note idx: %d ,customsId:%s \n", i, d)
 		uri := strings.ReplaceAll(vatNoteUri, "CUSTOMS_ID", d)
 
 		vatNoteUri := strings.ReplaceAll(uri, "FILE_TYPE", "vatNote")
-		vatNotDownloadFile := filepath.Join(downloadDir, d+"_vat_note.pdf")
+		vatNotDownloadFile := filepath.Join(vatNoteDir, d+"_vat_note.pdf")
 
 		fmt.Printf("Downloading vat note uri: %s, save to: %s \n", uri, vatNotDownloadFile)
 		err := utils.DownloadFileTo(vatNoteUri, vatNotDownloadFile)
@@ -118,13 +124,12 @@ func downloadVatNoteAndMakeZip(customsIds []string, downloadDir string, zipFileN
 		}
 
 		transferDocUri := strings.ReplaceAll(uri, "FILE_TYPE", "transferDoc")
-		transferDownloadFile := filepath.Join(downloadDir, d+"_vat_note.pdf")
+		transferDownloadFile := filepath.Join(transferDocDir, d+"_transfer_doc.pdf")
 		fmt.Printf("Downloading transfer doc uri: %s, save to: %s \n", uri, transferDownloadFile)
 		err = utils.DownloadFileTo(transferDocUri, transferDownloadFile)
 		if err != nil {
 			fmt.Printf("Download transfer doc file failed, uri: %s, err:%v \n", uri, err)
 		}
-
 	}
 
 	err := utils.ZipCompose(downloadDir, zipFileName)
