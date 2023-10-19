@@ -124,18 +124,18 @@ func downloadVatNoteAndMakeZip(customsIds []string, downloadDir string, zipFileN
 		vatNoteUri := strings.ReplaceAll(uri, "FILE_TYPE", "vatNote")
 		vatNotDownloadFile := filepath.Join(vatNoteDir, d+"_vat_note.pdf")
 
-		fmt.Printf("Downloading vat note uri: %s, save to: %s \n", uri, vatNotDownloadFile)
+		fmt.Printf("Downloading vat note uri: %s, save to: %s \n", vatNoteUri, vatNotDownloadFile)
 		err := utils.DownloadFileTo(vatNoteUri, vatNotDownloadFile)
 		if err != nil {
-			fmt.Printf("Download vat note file failed, uri: %s, err:%v \n", uri, err)
+			fmt.Printf("Download vat note file failed, uri: %s, err:%v \n", vatNoteUri, err)
 		}
 
 		transferDocUri := strings.ReplaceAll(uri, "FILE_TYPE", "transferDoc")
 		transferDownloadFile := filepath.Join(transferDocDir, d+"_transfer_doc.pdf")
-		fmt.Printf("Downloading transfer doc uri: %s, save to: %s \n", uri, transferDownloadFile)
+		fmt.Printf("Downloading transfer doc uri: %s, save to: %s \n", transferDocUri, transferDownloadFile)
 		err = utils.DownloadFileTo(transferDocUri, transferDownloadFile)
 		if err != nil {
-			fmt.Printf("Download transfer doc file failed, uri: %s, err:%v \n", uri, err)
+			fmt.Printf("Download transfer doc file failed, uri: %s, err:%v \n", transferDocUri, err)
 		}
 	}
 
