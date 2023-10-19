@@ -93,8 +93,9 @@ func (f *FileOfICP) readyForVatNote() {
 	vatNoteDownloadDir := filepath.Join(vatNoteDir, monthDate.Format("2006-01"))
 	fmt.Println("Vat note download dir: ", vatNoteDownloadDir)
 	if utils.IsExists(vatNoteDownloadDir) {
-		if !utils.Remove(vatNoteDownloadDir) {
-			log.Printf("Remove vat note download dir: %s failed.", vatNoteDownloadDir)
+		// 清空路径下所有文件
+		if !utils.Clear(vatNoteDownloadDir) {
+			f.Errors = append(f.Errors, fmt.Sprintf("Clear vat note download dir: %s, failed.", vatNoteDownloadDir))
 		}
 	} else {
 		if !utils.CreateDir(vatNoteDownloadDir) {

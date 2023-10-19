@@ -78,3 +78,17 @@ func Remove(path string) bool {
 	}
 	return true
 }
+
+// Clear Path 清空路径下的所有文件
+func Clear(dir string) bool {
+	if IsDir(dir) {
+		err := os.RemoveAll(dir)
+		if err != nil {
+			log.Println(err)
+			return false
+		}
+		return CreateDir(dir)
+	}
+	log.Printf("%s is not a directory\n", dir)
+	return false
+}
