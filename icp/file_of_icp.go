@@ -139,7 +139,7 @@ func downloadVatNoteAndMakeZip(customsIds []string, downloadDir string, zipFileN
 		}
 	}
 
-	err := utils.ZipCompose(downloadDir, zipFileName)
+	err := utils.Zip(downloadDir, zipFileName)
 	if err != nil {
 		fmt.Printf("ZipCompose failed,err:%v \n", err)
 	}
