@@ -65,3 +65,16 @@ func Copy(srcFile, dstFile string) error {
 	}
 	return nil
 }
+
+// Remove Path
+func Remove(path string) bool {
+	if !IsExists(path) {
+		return false
+	}
+	err := os.RemoveAll(path)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
