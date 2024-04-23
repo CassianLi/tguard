@@ -40,7 +40,7 @@ WHERE bc.customs_id = ?`
 	// QueryCustomsICPTaxSql The SQL used to query tax info of customs
 	QueryCustomsICPTaxSql = `SELECT bct.tax_type,
        bct.itemnr,
-       IF(bct.tax_type = 'A00', '4a', '3b')       AS destined,
+       IF(bct.tax_type = 'B00', '3b', '4a')       AS destined,
        bct.declared_amount,
        bct.tax_fee                                AS importDuty,
        IF(bct.tax_type = 'A00', '0.00', 't.b.d.') AS dutchCost,
@@ -67,7 +67,7 @@ ORDER BY bct.itemnr, bct.tax_type;`
 	// QueryCustomsICPTaxSqlNoneEc The SQL used to query tax info of none-ec customs
 	QueryCustomsICPTaxSqlNoneEc = `SELECT bct.tax_type,
        bct.itemnr,
-       IF(bct.tax_type = 'A00', '4a', '3b')       AS destined,
+      IF(bct.tax_type = 'B00', '3b', '4a')       AS destined,
        bct.declared_amount,
        bct.tax_fee                                AS importDuty,
        IF(bct.tax_type = 'A00', '0.00', 't.b.d.') AS dutchCost,
