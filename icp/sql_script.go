@@ -29,7 +29,7 @@ WHERE c.declare_version = 0
        bb.mode,
        cta.name AS partnerName
 FROM base_customs bc
-         INNER JOIN service_bill_customs sbc ON bc.customs_id = sbc.customs_id
+         INNER JOIN service_bill_customs sbc ON sbc.is_removed = 0 AND bc.customs_id = sbc.customs_id
          INNER JOIN base_bill bb ON sbc.bill_id = bb.bill_id
          LEFT JOIN config_tax_agency cta ON bc.duty_party = cta.vat_number
 WHERE bc.customs_id = ?`
