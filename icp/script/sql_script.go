@@ -163,8 +163,8 @@ WHERE t.customs_id = ? ;`
 	UpdateIcpIsNewestSql = `UPDATE service_icp SET is_newest = 0 WHERE duty_part = ? AND year = ? AND month = ?;`
 
 	// InsertServiceICP Insert row into service_icp
-	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status, vat_note) 
-values (:duty_part, :name, :year, :month, :icp_date,:total,:status,:vat_note);`
+	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status, vat_note, is_newest) 
+values (:duty_part, :name, :year, :month, :icp_date,:total,:status,:vat_note,:is_newest);`
 
 	// InsertServiceICPCustoms Insert row into service_icp_customs
 	InsertServiceICPCustoms = `INSERT INTO service_icp_customs (icp_name, xml_id, customs_id, tax_type,  in_excel) 
