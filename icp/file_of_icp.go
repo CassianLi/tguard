@@ -229,6 +229,7 @@ func (f *FileOfICP) saveICPInfoIntoDB(status bool) {
 		VatNote:   f.VatNoteZipFileName,
 		IsNewest:  true,
 	}
+
 	// 更新同一个dutyParty,同一个月份的ICP文件为非最新
 	updateDutyPartyICPStatusForExist(f.DutyParty, dt.Year(), int(dt.Month()))
 
