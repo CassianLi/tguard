@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sysafari.com/customs/tguard/global"
+	"sysafari.com/customs/tguard/icp/script"
 )
 
 const (
@@ -13,6 +14,7 @@ const (
 	TaxFileUrlPrefixForBE = "https://board.sysafari.com/declarefile-be?customsId=CUSTOMS_ID&statusCode=09"
 )
 
+// CustomsICP 生成ICP表格文件，主要是ICP Excel文件的制作，不包含后续压缩包和存储路径等的操作
 type CustomsICP struct {
 	CustomsId string `json:"customs_id"`
 	// TAX , TAX_TMP
@@ -36,28 +38,44 @@ func (icp *CustomsICP) QueryFillData() {
 func (icp *CustomsICP) queryTaxData() {
 	// base info
 	var icpBase CustomsICPBase
-	err := global.Db.Get(&icpBase, QueryCustomsICPBaseSql, icp.CustomsId)
+	err := global.Db.Get(&icpBase, script.QueryCustomsICPBaseSql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query icp base info failed. %v", icp.CustomsId, err))
 	}
 	icp.Mrn, icp.DeclareCountry = icpBase.Mrn, icpBase.DeclareCountry
 
-	// tax info
+	// 查询当前customs 是否是拆分报关 has_split
+	var hasSplit bool
+	err = global.Db.Get(&hasSplit, script.QueryCustomsHasSplitSql, icp.CustomsId)
+	if err != nil {
+		fmt.Println("Query customs has split failed, continue to make as no-split", err, icp.CustomsId)
+	}
+
+	// 如果是拆分报关，查询拆分报关的税金信息
+	queryCustomsTaxSql := script.QuerySplitCustomsTaxSql
+
+	if hasSplit {
+		fmt.Printf("The customs_id:%s is split customs, query split customs tax info.\n", icp.CustomsId)
+		queryCustomsTaxSql = script.QuerySplitCustomsTaxSql
+	}
+
+	// tax info, 如果没有正式税则信息（TAX），则查询临时税则信息（TMP_TAX）
 	var taxInfo []CustomsICPTax
-	err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSql, icp.CustomsId, ProcessCodeTax)
+	err = global.Db.Select(&taxInfo, queryCustomsTaxSql, icp.CustomsId, ProcessCodeTax)
 	if err != nil || len(taxInfo) == 0 {
-		// Query temporary tax information if official tax information is not available
-		err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSql, icp.CustomsId, ProcessCodeTemTax)
+		// 查询临时税金信息
+		fmt.Printf("The customs_id:%s query TAX info failed, try to query TMP_TAX info.\n", icp.CustomsId)
+		err = global.Db.Select(&taxInfo, queryCustomsTaxSql, icp.CustomsId, ProcessCodeTemTax)
 	}
 
 	if err != nil || len(taxInfo) == 0 {
 		// Query none-ec sql tax information is not available
-		err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSqlNoneEc, icp.CustomsId, ProcessCodeTax)
+		err = global.Db.Select(&taxInfo, script.QueryCustomsICPTaxSqlNoneEc, icp.CustomsId, ProcessCodeTax)
 	}
 
 	if err != nil || len(taxInfo) == 0 {
 		// Query temporary tax information if official tax information is not available
-		err = global.Db.Select(&taxInfo, QueryCustomsICPTaxSqlNoneEc, icp.CustomsId, ProcessCodeTemTax)
+		err = global.Db.Select(&taxInfo, script.QueryCustomsICPTaxSqlNoneEc, icp.CustomsId, ProcessCodeTemTax)
 	}
 
 	if err != nil || len(taxInfo) == 0 {
@@ -68,28 +86,28 @@ func (icp *CustomsICP) queryTaxData() {
 
 	// importer info
 	var importerInfo CustomsICPImporter
-	err = global.Db.Get(&importerInfo, QueryCustomsICPImporterSql, icp.CustomsId)
+	err = global.Db.Get(&importerInfo, script.QueryCustomsICPImporterSql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query importer info failed.%v", icp.CustomsId, err))
 	}
 
 	// delivery info
 	var deliveryInfo CustomsICPDelivery
-	err = global.Db.Get(&deliveryInfo, QueryCustomsICPDeliverySql, icp.CustomsId)
+	err = global.Db.Get(&deliveryInfo, script.QueryCustomsICPDeliverySql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query delivery address info failed.%v", icp.CustomsId, err))
 	}
 
 	// Company info
 	var companyName string
-	err = global.Db.Get(&companyName, QueryCustomsCompanySql, icp.CustomsId)
+	err = global.Db.Get(&companyName, script.QueryCustomsCompanySql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query company name failed.%v", icp.CustomsId, err))
 	}
 
 	// Query customs has inspection fine
 	var inspectionFineCount int64
-	err = global.Db.Get(&inspectionFineCount, QueryCustomsHasInspectionFineSql, icp.CustomsId)
+	err = global.Db.Get(&inspectionFineCount, script.QueryCustomsHasInspectionFineSql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query inspection fine failed.%v", icp.CustomsId, err))
 	}
@@ -100,7 +118,7 @@ func (icp *CustomsICP) queryTaxData() {
 
 	// into which icp file
 	var icpFileNames string
-	err = global.Db.Get(&icpFileNames, QueryCustomsHasInICPNameSql, icp.CustomsId)
+	err = global.Db.Get(&icpFileNames, script.QueryCustomsHasInICPNameSql, icp.CustomsId)
 	if err != nil {
 		icpFileNames = ""
 	}
@@ -186,16 +204,16 @@ func (icp *CustomsICP) queryTaxFileData() {
 // queryPodFileData Query the fill data of the pod file table
 func (icp *CustomsICP) queryPodFileData() {
 	var customsServiceKey CustomsServiceKeyObject
-	err := global.Db.Get(&customsServiceKey, QueryCustomsServiceKeySql, icp.CustomsId)
+	err := global.Db.Get(&customsServiceKey, script.QueryCustomsServiceKeySql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query service_key  failed.%v", icp.CustomsId, err))
 	}
 
 	var podFiles []PodFileObject
 	if "DECLARATION ONLY" == customsServiceKey.ServiceKey {
-		err = global.Db.Select(&podFiles, QueryCustomsTrackingPodDeclareOnlySql, icp.CustomsId)
+		err = global.Db.Select(&podFiles, script.QueryCustomsTrackingPodDeclareOnlySql, icp.CustomsId)
 	} else {
-		err = global.Db.Select(&podFiles, QueryCustomsTrackingPodSql, icp.CustomsId)
+		err = global.Db.Select(&podFiles, script.QueryCustomsTrackingPodSql, icp.CustomsId)
 	}
 
 	if err != nil {

@@ -1,4 +1,4 @@
-package icp
+package script
 
 const (
 	// QueryDutyPartiesForMonth SQL is used to query duty parties for a month

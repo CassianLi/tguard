@@ -7,6 +7,7 @@ import (
 	"log"
 	"path/filepath"
 	"sysafari.com/customs/tguard/global"
+	"sysafari.com/customs/tguard/icp/script"
 	"sysafari.com/customs/tguard/utils"
 	"time"
 )
@@ -34,7 +35,7 @@ type FileOfICPForVAT struct {
 func (f *FileOfICPForVAT) QueryCustomsIDs() {
 	var ids []string
 	log.Printf("vat:%s", f.VatNo)
-	err := global.Db.Select(&ids, QueryCustomsIDsByVatSql, f.VatNo)
+	err := global.Db.Select(&ids, script.QueryCustomsIDsByVatSql, f.VatNo)
 	if err != nil || len(ids) == 0 {
 		fmt.Println("Query customs ids failed, err: ", err)
 		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs vat no: %s", f.VatNo))
@@ -88,7 +89,7 @@ func (f *FileOfICPForVAT) saveCustomsInfoWithinICP() {
 		customsICPs = append(customsICPs, ci)
 	}
 
-	_, err := global.Db.NamedExec(InsertServiceICPCustoms, customsICPs)
+	_, err := global.Db.NamedExec(script.InsertServiceICPCustoms, customsICPs)
 	if err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s)'s customs information failed: %v", f.FileName, err))
 	}
@@ -186,7 +187,7 @@ func (f *FileOfICPForVAT) saveICPInfoIntoDB(status bool) {
 		Total:     len(f.CustomsIDs),
 		Status:    status,
 	}
-	_, err := global.Db.NamedExec(InsertServiceICP, serviceIcp)
+	_, err := global.Db.NamedExec(script.InsertServiceICP, serviceIcp)
 	if err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s) information failed: %v", f.FileName, err))
 	}

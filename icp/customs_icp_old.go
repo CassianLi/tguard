@@ -3,6 +3,7 @@ package icp
 import (
 	"fmt"
 	"sysafari.com/customs/tguard/global"
+	"sysafari.com/customs/tguard/icp/script"
 )
 
 /*
@@ -31,7 +32,7 @@ func (icp *CustomsICPOld) QueryICPFillData() {
 // queryTaxData Query ICP fill data
 func (icp *CustomsICPOld) queryTaxData() {
 	var taxData []TaxObject
-	err := global.Db.Select(&taxData, QueryOldICPFillDataSql, icp.CustomsId)
+	err := global.Db.Select(&taxData, script.QueryOldICPFillDataSql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query ICP fill data failed, error:%v", icp.CustomsId, err))
 	} else {
@@ -59,16 +60,16 @@ func (icp *CustomsICPOld) queryTaxFileData() {
 // queryPodFileData Query the fill data of the pod file table
 func (icp *CustomsICPOld) queryPodFileData() {
 	var customsServiceKey CustomsServiceKeyObject
-	err := global.Db.Get(&customsServiceKey, QueryCustomsServiceKeySql, icp.CustomsId)
+	err := global.Db.Get(&customsServiceKey, script.QueryCustomsServiceKeySql, icp.CustomsId)
 	if err != nil {
 		icp.Errors = append(icp.Errors, fmt.Sprintf("The customs_id:%s query service_key  failed.%v", icp.CustomsId, err))
 	}
 
 	var podFiles []PodFileObject
 	if "DECLARATION ONLY" == customsServiceKey.ServiceKey {
-		err = global.Db.Select(&podFiles, QueryCustomsTrackingPodDeclareOnlySql, icp.CustomsId)
+		err = global.Db.Select(&podFiles, script.QueryCustomsTrackingPodDeclareOnlySql, icp.CustomsId)
 	} else {
-		err = global.Db.Select(&podFiles, QueryCustomsTrackingPodSql, icp.CustomsId)
+		err = global.Db.Select(&podFiles, script.QueryCustomsTrackingPodSql, icp.CustomsId)
 	}
 
 	if err != nil {

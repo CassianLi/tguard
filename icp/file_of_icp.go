@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sysafari.com/customs/tguard/global"
+	"sysafari.com/customs/tguard/icp/script"
 	"sysafari.com/customs/tguard/utils"
 	"time"
 )
@@ -18,6 +19,8 @@ const (
 	FloatDecimalPlaces = 6
 )
 
+// FileOfICP 制作ICP的所有文件，包括税务信息，税务文件信息，POD文件信息等
+// 保存文件的路径，文件名，错误信息等
 type FileOfICP struct {
 	// CustomsIDs The customs IDs that needs to be placed in the ICP file
 	CustomsIDs []string `json:"customs_ids"`
@@ -48,7 +51,7 @@ type FileOfICP struct {
 // DutyNeedVatNote Whether duty needs vat note
 func (f *FileOfICP) DutyNeedVatNote() bool {
 	var isNeedVatNote bool
-	err := global.Db.Get(&isNeedVatNote, QueryDutyNeedVatNote, f.DutyParty)
+	err := global.Db.Get(&isNeedVatNote, script.QueryDutyNeedVatNote, f.DutyParty)
 	if err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs for duty party %s with month %s", f.DutyParty, f.Month))
 	}
@@ -58,10 +61,13 @@ func (f *FileOfICP) DutyNeedVatNote() bool {
 // QueryCustomsIDs Query customs IDs between the startDate and endDate
 func (f *FileOfICP) QueryCustomsIDs() {
 	var customsIds []string
-	err := global.Db.Select(&customsIds, QueryCustomsIdForICPWithinOneMonthSql, f.DutyParty, f.Month)
+	//err := global.Db.Select(&customsIds, script.QueryCustomsIdForICPWithinOneMonthSql, f.DutyParty, f.Month)
+	// 区分拆分报关单，after: 2024-08-29
+	err := global.Db.Select(&customsIds, script.QueryCustomsByDutyPartyForMonthAfterSplitSql, f.DutyParty, f.Month)
 	if err != nil || len(customsIds) == 0 {
 		f.Errors = append(f.Errors, fmt.Sprintf("Can not query customs for duty party %s with month %s", f.DutyParty, f.Month))
 	}
+
 	log.Printf("Total cusotms: %d", len(customsIds))
 	f.CustomsIDs = customsIds
 }
@@ -160,21 +166,24 @@ func (f *FileOfICP) GenerateVatNotesZip() {
 // GenerateICP Begin to generate ICP file
 func (f *FileOfICP) GenerateICP() string {
 	if len(f.Errors) == 0 {
+		// 1. 准备ICP文件信息，包括文件名，文件路径等
 		f.readyICPFileInfo()
 		if len(f.Errors) > 0 {
 			log.Printf("Generating ICP ready ICP info error: %v \n", f.Errors)
 		}
-
+		// 2. 生成填充数据。 根据报关单号查询税务信息，税务文件信息，POD文件信息
 		f.generateFillData()
 		if len(f.Errors) > 0 {
 			log.Printf("Generating ICP query fill data error: %v \n", f.Errors)
 		}
 
+		// 3. 生成ICP文件。将数据填充到excel文件中
 		f.createICPFile()
 		if len(f.Errors) > 0 {
 			log.Printf("Generating ICP create ICP excel file error: %v \n", f.Errors)
 		}
 
+		// 4. 保存ICP信息到数据库
 		f.saveICPInfoIntoDB(true)
 		f.saveCustomsInfoWithinICP()
 		if len(f.Errors) > 0 {
@@ -202,7 +211,7 @@ func (f *FileOfICP) saveICPInfoIntoDB(status bool) {
 		Status:    status,
 		VatNote:   f.VatNoteZipFileName,
 	}
-	_, err = global.Db.NamedExec(InsertServiceICP, serviceIcp)
+	_, err = global.Db.NamedExec(script.InsertServiceICP, serviceIcp)
 	if err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s) information failed: %v", f.FileName, err))
 	}
@@ -223,7 +232,7 @@ func (f *FileOfICP) saveCustomsInfoWithinICP() {
 		customsICPs = append(customsICPs, ci)
 	}
 
-	_, err := global.Db.NamedExec(InsertServiceICPCustoms, customsICPs)
+	_, err := global.Db.NamedExec(script.InsertServiceICPCustoms, customsICPs)
 	if err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s) and customs information failed: %v", f.FileName, err))
 	}
@@ -238,7 +247,10 @@ func (f *FileOfICP) generateFillData() {
 		icp := &CustomsICP{
 			CustomsId: d,
 		}
+		// 查询填充数据
 		icp.QueryFillData()
+
+		// 将当前customs的填充数据合并到文件数据中
 		if len(icp.Errors) == 0 {
 			f.TaxData = append(f.TaxData, icp.TaxData...)
 			f.TaxFileData = append(f.TaxFileData, icp.TaxFileData...)

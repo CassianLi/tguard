@@ -5,12 +5,13 @@ import (
 	"github.com/spf13/viper"
 	"log"
 	"sysafari.com/customs/tguard/global"
+	"sysafari.com/customs/tguard/icp/script"
 )
 
 // MakeICPForOneMonth Make ICP for one month
 func MakeICPForOneMonth(month string) {
 	var dutyParties []string
-	err := global.Db.Select(&dutyParties, QueryDutyPartiesForMonth, month)
+	err := global.Db.Select(&dutyParties, script.QueryDutyPartiesForMonth, month)
 	if err != nil {
 		log.Panicf("Query duty parties in the month %s , error:%v \n", month, err)
 	}
@@ -38,6 +39,8 @@ func MakeICPForDutyPart(dutyParty string, month string) (string, []string) {
 		Month:     month,
 	}
 
+	// 1. 查询ICP基础数据。本月内，指定的dutyParty的所有的customs_id
+	// 需要排除作为拆分报关的子报关单
 	icp.QueryCustomsIDs()
 
 	openVatNote := viper.GetBool("zip.vat-note-open")

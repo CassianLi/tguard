@@ -1,4 +1,4 @@
-package icp
+package script
 
 /*
 用户生成2022-09-19 10：34 以前的报关单的ICP 文件的SQL 查询语句
