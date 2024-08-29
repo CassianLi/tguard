@@ -195,6 +195,23 @@ func (f *FileOfICP) GenerateICP() string {
 	return ""
 }
 
+// updateDutyPartyICPStatusForExist 更新同一个dutyParty,同一个月份的ICP文件为非最新
+func updateDutyPartyICPStatusForExist(dutyParty string, year, month int) {
+	var icpTotal int
+	err := global.Db.Get(&icpTotal, script.QueryIcpHasExistTotalSql, dutyParty, year, month)
+	if err != nil {
+		fmt.Printf("Query ICP total failed, error: %v \n", err)
+		return
+	}
+
+	if icpTotal > 0 {
+		_, err = global.Db.Exec(script.UpdateIcpIsNewestSql, dutyParty, year, month)
+		if err != nil {
+			fmt.Printf("Update ICP is newest failed, error: %v \n", err)
+		}
+	}
+}
+
 // saveICPInfoIntoDB Save ICP info to database
 func (f *FileOfICP) saveICPInfoIntoDB(status bool) {
 	dt, err := time.Parse("2006-01", f.Month)
@@ -210,7 +227,12 @@ func (f *FileOfICP) saveICPInfoIntoDB(status bool) {
 		Total:     len(f.CustomsIDs),
 		Status:    status,
 		VatNote:   f.VatNoteZipFileName,
+		IsNewest:  true,
 	}
+	// 更新同一个dutyParty,同一个月份的ICP文件为非最新
+	updateDutyPartyICPStatusForExist(f.DutyParty, dt.Year(), int(dt.Month()))
+
+	// 保存ICP信息
 	_, err = global.Db.NamedExec(script.InsertServiceICP, serviceIcp)
 	if err != nil {
 		f.Errors = append(f.Errors, fmt.Sprintf("Save ICP(%s) information failed: %v", f.FileName, err))

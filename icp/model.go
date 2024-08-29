@@ -61,6 +61,7 @@ type ServiceICP struct {
 	Total     int    `db:"total"`
 	Status    bool   `db:"status"`
 	VatNote   string `db:"vat_note"`
+	IsNewest  bool   `db:"is_newest"`
 }
 
 // ServiceICPCustoms sysafari.service_icp_customs

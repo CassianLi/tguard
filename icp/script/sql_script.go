@@ -156,6 +156,12 @@ WHERE t.customs_id = ? ;`
 	// QueryCustomsHasInspectionFineSql 查询报关单是否有过查验罚款
 	QueryCustomsHasInspectionFineSql = `SELECT COUNT(1) FROM log_clearance_process WHERE customs_id = ? and process_code='INSPECTION_FINE';`
 
+	// QueryIcpHasExistTotalSql 查询ICP是否已经存在
+	QueryIcpHasExistTotalSql = `SELECT COUNT(*) FROM service_icp WHERE duty_part = ? AND year = ? AND month = ?;`
+
+	// UpdateIcpIsNewestSql 更新ICP为非最新。便于新生成的ICP文件成为最新
+	UpdateIcpIsNewestSql = `UPDATE service_icp SET is_newest = 0 WHERE duty_part = ? AND year = ? AND month = ?;`
+
 	// InsertServiceICP Insert row into service_icp
 	InsertServiceICP = `INSERT INTO service_icp (duty_part, name, year, month, icp_date,total, status, vat_note) 
 values (:duty_part, :name, :year, :month, :icp_date,:total,:status,:vat_note);`
