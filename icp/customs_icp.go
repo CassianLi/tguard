@@ -52,7 +52,7 @@ func (icp *CustomsICP) queryTaxData() {
 	}
 
 	// 如果是拆分报关，查询拆分报关的税金信息
-	queryCustomsTaxSql := script.QuerySplitCustomsTaxSql
+	queryCustomsTaxSql := script.QueryCustomsICPTaxSql
 
 	if hasSplit {
 		fmt.Printf("The customs_id:%s is split customs, query split customs tax info.\n", icp.CustomsId)
